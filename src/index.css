@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Brown University Slang Dictionary Design System */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* paper-white */
+    --foreground: 30 25% 15%; /* dark brown text */
+
+    --card: 38 50% 85%; /* cream */
+    --card-foreground: 30 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 25% 15%;
+
+    --primary: 30 30% 25%; /* primary-brown */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 38 50% 85%; /* cream */
+    --secondary-foreground: 30 25% 15%;
+
+    --muted: 38 50% 85%;
+    --muted-foreground: 30 15% 45%;
+
+    --accent: 0 70% 58%; /* bruno-red */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 58%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 38 30% 75%;
+    --input: 38 30% 75%;
+    --ring: 0 70% 58%;
+
+    --radius: 0.75rem; /* 12px */
+
+    /* Custom Brown Colors */
+    --brown-primary: 30 30% 25%; /* #4E3629 */
+    --bruno-red: 0 70% 58%; /* #EE3E3E */
+    --cream: 38 50% 85%; /* #F5E6D0 */
+    --paper-white: 0 0% 100%; /* #FFFFFF */
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .text-brown-primary {
+    color: hsl(var(--brown-primary));
+  }
+  
+  .bg-brown-primary {
+    background-color: hsl(var(--brown-primary));
+  }
+  
+  .text-bruno-red {
+    color: hsl(var(--bruno-red));
+  }
+  
+  .bg-bruno-red {
+    background-color: hsl(var(--bruno-red));
+  }
+  
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+  
+  .card-shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+}
