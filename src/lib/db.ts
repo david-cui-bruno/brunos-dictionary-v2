@@ -62,13 +62,16 @@ export async function getWordOfDay() {
     .from('word_of_day')
     .select(`
       *,
-      words(*)
+      words(
+        *,
+        definitions(*)
+      )
     `)
     .eq('date', today)
     .single()
 
   if (data?.words) {
-    // Get definitions for the word of the day
+    // Filter definitions to only clean ones
     const { data: definitions } = await supabase
       .from('definitions')
       .select('*')

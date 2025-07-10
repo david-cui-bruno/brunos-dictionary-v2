@@ -52,6 +52,21 @@
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', sans-serif;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .bg-site {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+    background: 
+      linear-gradient(rgba(181, 140, 90, 0.35), rgba(181, 140, 90, 0.35)), /* light brown overlay */
+      url('/images/sayles_interior_bg.jpg') center center / cover no-repeat;
+    filter: blur(8px);
+    pointer-events: none;
   }
 
   h1, h2, h3, h4, h5, h6 {

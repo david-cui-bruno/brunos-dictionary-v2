@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     console.log('Vote counts:', { voteCounts, countError })
 
-    const netScore = voteCounts?.reduce((sum, vote) => sum + vote.value, 0) || 0
+    const netScore = voteCounts?.reduce((sum, vote) => sum + (vote.value ?? 0), 0) || 0
     const upCount = voteCounts?.filter(vote => vote.value === 1).length || 0
     const downCount = voteCounts?.filter(vote => vote.value === -1).length || 0
 

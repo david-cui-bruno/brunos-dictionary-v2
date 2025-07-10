@@ -53,7 +53,7 @@ export default async function WordDetailPage({
                   <div className="flex items-center gap-4 mt-4 text-sm text-gray-500">
                     <span>Score: {definition.score || 0}</span>
                     <span>•</span>
-                    <span>{new Date(definition.created_at).toLocaleDateString()}</span>
+                    <span>{definition.created_at ? new Date(definition.created_at).toLocaleDateString() : 'Unknown date'}</span>
                   </div>
                 </div>
               ))}

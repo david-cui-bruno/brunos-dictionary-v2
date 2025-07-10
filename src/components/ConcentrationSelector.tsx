@@ -198,7 +198,9 @@ export default function ConcentrationSelector({
         {value.map((concentration, index) => (
           <div
             key={concentration}
-            ref={el => chipRefs.current[index] = el}
+            ref={(el) => {
+              chipRefs.current[index] = el
+            }}
             className="inline-flex items-center justify-center gap-1 px-2 py-1 bg-brown-primary text-white text-sm rounded-full min-h-[24px]"
             tabIndex={0}
             onKeyDown={(e) => handleChipKeyDown(e, index)}

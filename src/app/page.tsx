@@ -30,7 +30,7 @@ export default async function HomePage() {
   // Process popular words to get the highest scoring definition for each word
   const processedPopularWords = popularWords.data?.map(word => {
     const highestScoreDef = word.definitions?.reduce((max, def) => 
-      def.score > max.score ? def : max
+      (def.score ?? 0) > (max.score ?? 0) ? def : max
     , word.definitions[0])
     
     return {
@@ -77,11 +77,11 @@ export default async function HomePage() {
               <div className="max-w-2xl mx-auto">
                 <WordCard 
                   word={wordOfDay.data.words.word}
-                  definition={wordOfDay.data.words.definitions?.[0]?.body || "No definition available"}
-                  example={wordOfDay.data.words.definitions?.[0]?.example}
+                  definition={wordOfDay.data.words.definitions?.[0]?.body ?? "No definition available"}
+                  example={wordOfDay.data.words.definitions?.[0]?.example ?? ""}
                   slug={wordOfDay.data.words.slug}
-                  definitionId={wordOfDay.data.words.definitions?.[0]?.id}
-                  score={wordOfDay.data.words.definitions?.[0]?.score || 0}
+                  definitionId={wordOfDay.data.words.definitions?.[0]?.id ?? ""}
+                  score={wordOfDay.data.words.definitions?.[0]?.score ?? 0}
                 />
               </div>
             ) : (

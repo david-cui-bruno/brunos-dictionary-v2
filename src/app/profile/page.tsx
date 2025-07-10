@@ -24,10 +24,19 @@ interface UserProfile {
   concentration?: string
 }
 
+interface Word {
+  id: string
+  word: string
+  definitions?: Array<{
+    body: string
+    score: number
+  }>
+}
+
 export default function ProfilePage() {
   const { data: session } = useSession()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [myWords, setMyWords] = useState([])
+  const [myWords, setMyWords] = useState<Word[]>([])
   const [myVotes, setMyVotes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   

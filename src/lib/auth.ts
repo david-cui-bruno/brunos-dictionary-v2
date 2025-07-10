@@ -71,7 +71,7 @@ export const authOptions: NextAuthOptions = {
       console.log('JWT callback:', { token, user })
       if (user) {
         token.id = user.id
-        token.email = user.email
+        token.email = user.email || ''
         // Extract netid for JWT
         token.netid = user.email?.replace('@brown.edu', '') || ''
       }
