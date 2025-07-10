@@ -1,56 +1,54 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import VoteButtons from "./VoteButtons";
 
 interface WordCardProps {
   word: string;
   definition: string;
-  votes: number;
-  example?: string;
+  example?: string | null;
   slug: string;
+  definitionId?: string;
+  score?: number;
+  userVote?: number;
 }
 
-const WordCard = ({ word, definition, votes, example, slug }: WordCardProps) => {
+const WordCard = ({ 
+  word, 
+  definition, 
+  example, 
+  slug, 
+  definitionId,
+  score = 0,
+  userVote = 0
+}: WordCardProps) => {
   return (
-    <Card className="bg-cream card-shadow hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 rounded-xl p-6">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h3 className="text-xl font-semibold text-brown-primary mb-2">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+      <div className="flex justify-between items-start mb-3">
+        <Link href={`/word/${slug}`} className="flex-1">
+          <h3 className="text-xl font-semibold text-brown-primary hover:text-brown-primary/80 transition-colors">
             {word}
           </h3>
-          <p className="text-foreground mb-3 leading-relaxed">
-            {definition}
-          </p>
-          {example && (
-            <p className="text-muted-foreground italic text-sm mb-4">
-              "{example}"
-            </p>
-          )}
-          <Link to={`/word/${slug}`}>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="border-brown-primary text-brown-primary hover:bg-brown-primary hover:text-white focus-ring"
-            >
-              View Details
-            </Button>
-          </Link>
-        </div>
-        
-        <div className="flex flex-col items-center ml-4">
-          <button className="text-bruno-red hover:text-red-600 focus-ring rounded p-1">
-            <ChevronUp className="w-5 h-5" />
-          </button>
-          <span className="text-sm font-medium text-brown-primary my-1">
-            {votes}
-          </span>
-          <button className="text-muted-foreground hover:text-foreground focus-ring rounded p-1">
-            <ChevronDown className="w-5 h-5" />
-          </button>
-        </div>
+        </Link>
+        {definitionId && (
+          <VoteButtons 
+            definitionId={definitionId}
+            initialScore={score}
+            initialUserVote={userVote}
+          />
+        )}
       </div>
-    </Card>
+      
+      <Link href={`/word/${slug}`}>
+        <p className="text-gray-700 mb-3 line-clamp-3">{definition}</p>
+        {example && (
+          <p className="text-sm text-gray-600 italic line-clamp-2">
+            "{example}"
+          </p>
+        )}
+      </Link>
+    </div>
   );
 };
 
