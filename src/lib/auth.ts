@@ -87,9 +87,10 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async redirect({ url, baseUrl }) {
-      console.log('Redirect callback:', { url, baseUrl })
-      // Always redirect to home page after successful sign in
-      return `${baseUrl}/`
+      // Simplify the redirect logic
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     }
   },
   pages: {
@@ -99,5 +100,4 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  debug: true,
 } 

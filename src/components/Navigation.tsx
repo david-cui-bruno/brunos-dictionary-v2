@@ -23,13 +23,13 @@ const Navigation = () => {
   return (
     <nav className="bg-brown-primary text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 relative">
           <Link href="/" className="text-xl font-bold">
             Bruno's Dictionary
           </Link>
           
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-8">
+          {/* Search Bar - Absolutely Centered */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 max-w-md w-full">
             <form onSubmit={handleSearch} className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
@@ -61,7 +61,7 @@ const Navigation = () => {
               </Link>
             ) : (
               <Link href="/auth/signin">
-                <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-brown-primary">
+                <Button variant="outline" size="sm" className="text-brown-primary border-white hover:bg-white hover:text-brown-primary">
                   Sign In
                 </Button>
               </Link>

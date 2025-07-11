@@ -26,7 +26,7 @@ const WordCard = ({
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
       <div className="flex justify-between items-start mb-3">
-        <Link href={`/word/${slug}`} className="flex-1">
+        <Link href={`/search?q=${encodeURIComponent(word)}`} className="flex-1">
           <h3 className="text-xl font-semibold text-brown-primary hover:text-brown-primary/80 transition-colors">
             {word}
           </h3>
@@ -40,7 +40,7 @@ const WordCard = ({
         )}
       </div>
       
-      <Link href={`/word/${slug}`}>
+      <Link href={`/search?q=${encodeURIComponent(word)}`}>
         <p className="text-gray-700 mb-3 line-clamp-3">{definition}</p>
         {example && (
           <p className="text-sm text-gray-600 italic line-clamp-2">

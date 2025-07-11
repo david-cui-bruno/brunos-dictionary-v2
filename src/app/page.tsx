@@ -4,6 +4,7 @@ import WordCard from '@/components/WordCard'
 import { getWordOfDay, getWords } from '@/lib/db'
 import { supabase } from '@/lib/supabase'
 import { TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
 export default async function HomePage() {
   // Fetch word of the day, recent words, and popular words
@@ -108,9 +109,14 @@ export default async function HomePage() {
                         
                         {/* Word */}
                         <div>
-                          <h3 className="font-semibold text-brown-primary">
-                            {word.word}
-                          </h3>
+                          <Link 
+                            href={`/search?q=${encodeURIComponent(word.word)}`}
+                            className="hover:text-brown-600 transition-colors"
+                          >
+                            <h3 className="font-semibold text-brown-primary cursor-pointer">
+                              {word.word}
+                            </h3>
+                          </Link>
                         </div>
                       </div>
                       

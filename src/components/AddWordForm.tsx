@@ -46,6 +46,9 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error('This word already exists in the dictionary')
+        }
         throw new Error(data.error || 'Failed to create word')
       }
 
@@ -55,12 +58,12 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
       if (onSuccess) {
         onSuccess()
       } else {
-        router.push(`/word/${data.word.slug}`)
+        router.push(`/search?q=${encodeURIComponent(data.word.word)}`)
       }
 
     } catch (error) {
       setError((error as Error).message)
-      toast.error('Failed to add word')
+      toast.error((error as Error).message)
     } finally {
       setIsSubmitting(false)
     }
@@ -79,10 +82,7 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add New Word</CardTitle>
-      </CardHeader>
+    <Card className="bg-cream card-shadow p-6 rounded-xl">
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (

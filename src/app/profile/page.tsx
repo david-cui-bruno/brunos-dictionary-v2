@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card"
 import ConcentrationSelector from '@/components/ConcentrationSelector'
 import YearSelector from '@/components/YearSelector'
 import { LogOut } from "lucide-react"
+import Link from "next/link"
 
 interface UserProfile {
   id: string
@@ -234,9 +235,14 @@ export default function ProfilePage() {
                 <Card key={word.id} className="bg-cream card-shadow p-4 rounded-xl">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-brown-primary mb-1">
-                        {word.word}
-                      </h3>
+                      <Link 
+                        href={`/search?q=${encodeURIComponent(word.word)}`}
+                        className="hover:text-brown-600 transition-colors"
+                      >
+                        <h3 className="font-semibold text-brown-primary mb-1 cursor-pointer">
+                          {word.word}
+                        </h3>
+                      </Link>
                       <p className="text-foreground text-sm mb-2">
                         {word.definitions?.[0]?.body || "No definition available"}
                       </p>
