@@ -44,13 +44,6 @@ export default async function HomePage() {
     return scoreB - scoreA // Descending order
   }) || []
 
-  // Add debugging
-  console.log('=== DEBUG ===')
-  console.log('Word of day:', wordOfDay)
-  console.log('Recent words:', recentWords)
-  console.log('Popular words:', processedPopularWords)
-  console.log('================')
-
   return (
     <div className="min-h-screen bg-paper-white">
       <Navigation />
