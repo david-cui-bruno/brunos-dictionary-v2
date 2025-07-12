@@ -1,5 +1,5 @@
-import { WordCard } from "@/components/word-card"
-import { Leaderboard } from "@/components/leaderboard"
+import WordCard from "@/components/WordCard"
+import Leaderboard from "@/components/Leaderboard"
 
 export default function HomePage() {
   const wordOfTheDay = {
