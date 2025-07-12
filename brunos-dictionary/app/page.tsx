@@ -1,101 +1,178 @@
 import WordCard from "@/components/WordCard"
-import Leaderboard from "@/components/Leaderboard"
+import { getWordOfDay, getWords } from '@/lib/db'
+import { supabase } from '@/lib/supabase'
+import { TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
-export default function HomePage() {
-  const wordOfTheDay = {
-    word: "Ratty",
-    definition:
-      "The Sharpe Refectory, Brown's main dining hall known for its distinctive brutalist architecture and legendary weekend brunch.",
-    example: "I'll meet you at the Ratty for Sunday brunch - hope they have the good pancakes today!",
-    tags: ["dining", "campus", "food"],
-    votes: 127,
-  }
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
 
-  const topWords = [
-    { word: "Ratty", votes: 127, rank: 1 },
-    { word: "The Rock", votes: 98, rank: 2 },
-    { word: "Blueno", votes: 87, rank: 3 },
-    { word: "Shopping Period", votes: 72, rank: 4 },
-    { word: "The Hill", votes: 65, rank: 5 },
-  ]
+type Props = {
+  searchParams: { refresh?: string }
+}
 
-  const recentWords = [
-    {
-      word: "Blueno",
-      definition: "Brown University's beloved bear mascot, often seen at sporting events and campus celebrations.",
-      example: "Blueno showed up to the hockey game and got everyone hyped!",
-      tags: ["mascot", "sports", "tradition"],
-      votes: 87,
-    },
-    {
-      word: "The Rock",
-      definition: "The iconic painted rock on campus that student organizations use to advertise events and messages.",
-      example: "Did you see what they painted on The Rock this morning? It's hilarious!",
-      tags: ["campus", "tradition", "art"],
-      votes: 98,
-    },
-    {
-      word: "Shopping Period",
-      definition:
-        "The first two weeks of each semester when students can attend any class before finalizing their course schedule.",
-      example: "I'm hitting five different classes during shopping period to see which professor I vibe with.",
-      tags: ["academics", "registration", "classes"],
-      votes: 72,
-    },
-  ]
+export default async function HomePage({ searchParams }: Props) {
+  // Fetch word of the day, recent words, and popular words
+  const [wordOfDay, recentWords, popularWords] = await Promise.all([
+    getWordOfDay(),
+    getWords(),
+    // Get popular words
+    supabase
+      .from('words')
+      .select(`
+        *,
+        definitions!inner(
+          id,
+          body,
+          example,
+          score,
+          status
+        )
+      `)
+      .eq('definitions.status', 'clean')
+      .limit(20)
+  ])
+
+  // Process popular words to get the highest scoring definition for each word
+  const processedPopularWords = popularWords.data?.map(word => {
+    const highestScoreDef = word.definitions?.reduce((max, def) => 
+      (def.score ?? 0) > (max.score ?? 0) ? def : max
+    , word.definitions[0])
+    
+    return {
+      ...word,
+      definitions: [highestScoreDef]
+    }
+  }).sort((a, b) => {
+    const scoreA = a.definitions?.[0]?.score || 0
+    const scoreB = b.definitions?.[0]?.score || 0
+    return scoreB - scoreA
+  }) || []
 
   return (
     <div className="space-y-12">
       {/* Header */}
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-6">
         <h1 className="text-5xl font-playfair font-bold text-[#4E3629]">Bruno's Dictionary</h1>
         <p className="text-xl text-[#8E8B82] max-w-2xl mx-auto">Learn Brown University slang, one word at a time.</p>
       </div>
 
-      {/* Word of the Day */}
-      <section>
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">Word of the Day</h2>
-          <p className="text-[#8E8B82]">Discover today's featured Brown slang term</p>
-        </div>
+      {/* Word of the Day and Leaderboard Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Word of the Day */}
+        <section>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">Word of the Day</h2>
+            <p className="text-[#8E8B82]">Discover today's featured Brown slang term</p>
+          </div>
 
-        <div className="max-w-2xl mx-auto">
-          <WordCard
-            word={wordOfTheDay.word}
-            definition={wordOfTheDay.definition}
-            example={wordOfTheDay.example}
-            tags={wordOfTheDay.tags}
-            votes={wordOfTheDay.votes}
-          />
-        </div>
-      </section>
+          {wordOfDay.data?.words && wordOfDay.data.words.definitions && wordOfDay.data.words.definitions.length > 0 ? (
+            <div className="max-w-md mx-auto">
+              <WordCard 
+                word={wordOfDay.data.words.word}
+                definition={wordOfDay.data.words.definitions[0]?.body ?? "No definition available"}
+                example={wordOfDay.data.words.definitions[0]?.example ?? ""}
+                slug={wordOfDay.data.words.slug}
+                definitionId={wordOfDay.data.words.definitions[0]?.id ?? ""}
+                score={wordOfDay.data.words.definitions[0]?.score ?? 0}
+              />
+            </div>
+          ) : (
+            <div className="bruno-card text-center py-12 max-w-md mx-auto">
+              <div className="text-6xl mb-4">📚</div>
+              <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
+                No word of the day available
+              </h3>
+              <p className="text-[#8E8B82]">Check back tomorrow for a new featured word!</p>
+            </div>
+          )}
+        </section>
 
-      {/* Top Words Leaderboard */}
-      <section>
-        <div className="max-w-2xl mx-auto">
-          <Leaderboard words={topWords} />
-        </div>
-      </section>
+        {/* Popular Words */}
+        <section>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">Top Words</h2>
+            <p className="text-[#8E8B82]">Most popular slang terms in the community</p>
+          </div>
 
-      {/* Recent Additions */}
+          {processedPopularWords.length > 0 ? (
+            <div className="bruno-card max-w-md mx-auto">
+              <div className="space-y-4">
+                {processedPopularWords.slice(0, 5).map((word, index) => (
+                  <div key={word.id} className="flex items-center justify-between p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82]">
+                    <div className="flex items-center space-x-4">
+                      <span className={`bruno-badge ${index === 0 ? '' : index === 1 ? '' : index === 2 ? '' : 'bg-[#8E8B82] text-white'} text-lg font-bold w-8 text-center`}>
+                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                      </span>
+                      
+                      <div>
+                        <Link 
+                          href={`/search?q=${encodeURIComponent(word.word)}`}
+                          className="hover:text-[#4E3629]/80 transition-colors"
+                        >
+                          <h3 className="text-lg font-playfair font-semibold text-[#4E3629] cursor-pointer">
+                            {word.word}
+                          </h3>
+                        </Link>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-1 text-[#8E8B82]">
+                      <TrendingUp className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        {word.definitions?.[0]?.score || 0}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="bruno-card text-center py-12 max-w-md mx-auto">
+              <div className="text-6xl mb-4">📊</div>
+              <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
+                No popular words yet
+              </h3>
+              <p className="text-[#8E8B82]">Be the first to add words and build the community!</p>
+            </div>
+          )}
+        </section>
+      </div>
+
+      {/* Recent Words */}
       <section>
         <div className="text-center mb-8">
           <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">Recent Additions</h2>
           <p className="text-[#8E8B82]">Fresh slang from the Brown community</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentWords.map((word, index) => (
-            <WordCard
-              key={index}
-              word={word.word}
-              definition={word.definition}
-              example={word.example}
-              tags={word.tags}
-              votes={word.votes}
-            />
-          ))}
-        </div>
+        {recentWords.data && recentWords.data.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentWords.data.slice(0, 6).map((word) => (
+              <WordCard
+                key={word.id}
+                word={word.word}
+                definition={word.definitions?.[0]?.body || "No definition available"}
+                example={word.definitions?.[0]?.example}
+                slug={word.slug}
+                definitionId={word.definitions?.[0]?.id}
+                score={word.definitions?.[0]?.score || 0}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bruno-card text-center py-12">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
+              No recent additions yet
+            </h3>
+            <p className="text-[#8E8B82] mb-6">Be the first to contribute to Bruno's Dictionary!</p>
+            <Link href="/add" className="bruno-button inline-block">
+              Add Your First Word
+            </Link>
+          </div>
+        )}
       </section>
     </div>
   )
