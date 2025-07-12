@@ -1,0 +1,29 @@
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter, Playfair_Display } from "next/font/google"
+import "./globals.css"
+import { Navigation } from "@/components/navigation"
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
+
+export const metadata: Metadata = {
+  title: "Bruno's Dictionary - Brown University Slang",
+  description: "Learn Brown University slang, one word at a time.",
+    generator: 'v0.dev'
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <body className="min-h-screen bg-[#FAF7F3] text-[#4E3629] font-inter">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">{children}</main>
+      </body>
+    </html>
+  )
+}

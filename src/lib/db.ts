@@ -5,7 +5,12 @@ type Word = Database['public']['Tables']['words']['Row']
 type Definition = Database['public']['Tables']['definitions']['Row']
 type User = Database['public']['Tables']['users']['Row']
 
-export async function getWords(search?: string, userId?: string) {
+type FetchOptions = {
+  cache?: RequestCache;
+  headers?: HeadersInit;
+};
+
+export async function getWords(search?: string, options?: FetchOptions) {
   let query = supabase
     .from('words')
     .select(`
@@ -55,7 +60,7 @@ export async function getWordBySlug(slug: string, userId?: string) {
   return { data: result, error: null }
 }
 
-export async function getWordOfDay() {
+export async function getWordOfDay(options?: FetchOptions) {
   const today = new Date().toISOString().split('T')[0]
   
   const { data, error } = await supabase

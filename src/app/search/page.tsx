@@ -15,43 +15,71 @@ export default async function SearchPage({
   const words = await getWords(searchParams.q)
 
   return (
-    <div className="min-h-screen bg-paper-white">
+    <div className="min-h-screen bg-[#FAF7F3]">
       <Navigation />
       
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Results Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-brown-primary mb-2">
-            Search Results
-          </h1>
-          {searchParams.q && (
-            <p className="text-gray-600">
-              Results for "{searchParams.q}"
-            </p>
-          )}
-        </div>
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Search Header */}
+          <div className="text-center space-y-4">
+            {searchParams.q ? (
+              <>
+                <h1 className="text-4xl font-playfair font-bold text-[#4E3629]">
+                  Results for "{searchParams.q}"
+                </h1>
+                <p className="text-[#8E8B82]">
+                  {words.data && words.data.length > 0 
+                    ? `Found ${words.data.length} result${words.data.length === 1 ? '' : 's'}`
+                    : 'No results found'
+                  }
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-4xl font-playfair font-bold text-[#4E3629]">
+                  Search Bruno's Dictionary
+                </h1>
+                <p className="text-[#8E8B82]">Find Brown University slang terms, definitions, and examples</p>
+              </>
+            )}
+          </div>
 
-        {/* Results Container - Centered 700px column */}
-        <div className="max-w-[700px] mx-auto">
-          {words.data && words.data.length > 0 ? (
-            <div className="space-y-4">
-              {words.data.flatMap((word) => 
-                word.definitions?.map((definition, defIndex) => (
-                  <DefinitionCard 
-                    key={definition.id}
-                    definition={definition}
-                    word={word.word}
-                  />
-                )) || []
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
-                {searchParams.q ? 'No words found matching your search.' : 'No words available yet.'}
-              </p>
-            </div>
-          )}
+          {/* Results Container */}
+          <div className="max-w-[700px] mx-auto">
+            {words.data && words.data.length > 0 ? (
+              <div className="space-y-4">
+                {words.data.flatMap((word) => 
+                  word.definitions?.map((definition, defIndex) => (
+                    <DefinitionCard 
+                      key={definition.id}
+                      definition={definition}
+                      word={word.word}
+                    />
+                  )) || []
+                )}
+              </div>
+            ) : (
+              <div className="bruno-card text-center py-12">
+                <div className="text-6xl mb-4">📚</div>
+                <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
+                  {searchParams.q ? 'No words found matching your search' : 'No words available yet'}
+                </h3>
+                <p className="text-[#8E8B82] mb-6">
+                  {searchParams.q 
+                    ? 'Try searching for different terms or browse our recent additions.'
+                    : 'Be the first to add words to the dictionary!'
+                  }
+                </p>
+                {!searchParams.q && (
+                  <Link href="/add">
+                    <Button className="bruno-button">
+                      Add Your First Word
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
@@ -69,76 +97,72 @@ function DefinitionCard({
   word: string
 }) {
   return (
-    <Card className="relative overflow-hidden">
-      <div className="p-5">
-        {/* Header and By-line */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-brown-primary mb-1">
-              <Link 
-                href={`/search?q=${encodeURIComponent(word)}`}
-                className="hover:text-brown-600 transition-colors cursor-pointer"
-              >
-                {word}
-              </Link>
-            </h3>
-            <div className="text-sm text-gray-500">
-              by {definition.created_by || 'Anonymous'}, {definition.created_at ? new Date(definition.created_at).toLocaleDateString() : 'Unknown date'}
-            </div>
-          </div>
-        </div>
-
-        {/* Definition Text */}
-        <div className="mb-4">
-          <p className="text-base leading-relaxed text-gray-800">
-            {definition.body}
-          </p>
-        </div>
-
-        {/* Example */}
-        {definition.example && (
-          <div className="mb-4 pl-4 border-l-2 border-gray-200">
-            <p className="text-sm text-gray-600 italic">
-              "{definition.example}"
-            </p>
-          </div>
-        )}
-
-        {/* Tags (if any) */}
-        {definition.tags && definition.tags.length > 0 && (
-          <div className="mb-4 flex flex-wrap gap-2">
-            {definition.tags.map((tag: string, index: number) => (
-              <span 
-                key={index}
-                className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full border border-gray-200"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Vote Bar and Share Row */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          {/* Vote Bar */}
-          <VoteButtons 
-            definitionId={definition.id}
-            initialScore={definition.score || 0}
-            initialUserVote={0}
-          />
-
-          {/* Share Row */}
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-1 h-auto text-blue-600 hover:text-blue-700"
+    <div className="bruno-card">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <h3 className="text-lg font-playfair font-semibold text-[#4E3629] mb-1">
+            <Link 
+              href={`/search?q=${encodeURIComponent(word)}`}
+              className="hover:text-[#4E3629]/80 transition-colors cursor-pointer"
             >
-              <Share2 className="h-4 w-4" />
-            </Button>
+              {word}
+            </Link>
+          </h3>
+          <div className="text-sm text-[#8E8B82]">
+            by {definition.created_by || 'Anonymous'}, {definition.created_at ? new Date(definition.created_at).toLocaleDateString() : 'Unknown date'}
           </div>
         </div>
       </div>
-    </Card>
+
+      {/* Definition Text */}
+      <div className="mb-4">
+        <p className="text-base leading-relaxed text-[#4E3629]">
+          {definition.body}
+        </p>
+      </div>
+
+      {/* Example */}
+      {definition.example && (
+        <div className="mb-4 pl-4 border-l-2 border-[#8E8B82]">
+          <p className="text-sm text-[#8E8B82] italic">
+            "{definition.example}"
+          </p>
+        </div>
+      )}
+
+      {/* Tags (if any) */}
+      {definition.tags && definition.tags.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {definition.tags.map((tag: string, index: number) => (
+            <span 
+              key={index}
+              className="bruno-badge bruno-badge-tag"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Vote Bar and Share Row */}
+      <div className="flex items-center justify-between pt-4 border-t border-[#8E8B82]/20">
+        {/* Vote Bar */}
+        <VoteButtons 
+          definitionId={definition.id}
+          initialScore={definition.score || 0}
+          initialUserVote={0}
+        />
+
+        {/* Share Row */}
+        <div className="flex items-center space-x-2">
+          <button 
+            className="p-2 rounded-[2px] hover:bg-[#8E8B82] hover:text-white transition-colors"
+            aria-label="Share definition"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }

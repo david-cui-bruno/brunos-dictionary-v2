@@ -4,17 +4,18 @@ import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { toast } from 'sonner'
 
 interface AddDefinitionFormProps {
   wordId: string
-  wordName: string
+  word: string
   onSuccess?: () => void
+  onCancel?: () => void
 }
 
-export default function AddDefinitionForm({ wordId, wordName, onSuccess }: AddDefinitionFormProps) {
+export default function AddDefinitionForm({ wordId, word, onSuccess, onCancel }: AddDefinitionFormProps) {
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -40,8 +41,8 @@ export default function AddDefinitionForm({ wordId, wordName, onSuccess }: AddDe
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           word_id: wordId,
-          definition: formData.definition,
-          example: formData.example
+          body: formData.definition,
+          example: formData.example || null
         })
       })
 
@@ -60,7 +61,7 @@ export default function AddDefinitionForm({ wordId, wordName, onSuccess }: AddDe
 
     } catch (error) {
       setError((error as Error).message)
-      toast.error('Failed to add definition')
+      toast.error((error as Error).message)
     } finally {
       setIsSubmitting(false)
     }
@@ -68,65 +69,81 @@ export default function AddDefinitionForm({ wordId, wordName, onSuccess }: AddDe
 
   if (!session) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-center text-gray-500">
-            Please log in to add definitions.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="bruno-card text-center py-8">
+        <p className="text-[#8E8B82]">
+          Please log in to add definitions to the dictionary.
+        </p>
+      </div>
     )
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add Definition for "{wordName}"</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <Alert>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          
-          <div>
-            <label htmlFor="definition" className="block text-sm font-medium text-gray-700 mb-1">
-              Definition *
-            </label>
-            <Textarea
-              id="definition"
-              value={formData.definition}
-              onChange={(e) => setFormData({ ...formData, definition: e.target.value })}
-              placeholder="What does this word mean?"
-              rows={3}
-              required
-            />
-          </div>
+    <div className="bruno-card space-y-6">
+      <div>
+        <h3 className="text-lg font-playfair font-bold text-[#4E3629] mb-2">
+          Add Definition for "{word}"
+        </h3>
+        <p className="text-[#8E8B82] text-sm">
+          Help expand the definition of this word with your knowledge.
+        </p>
+      </div>
 
-          <div>
-            <label htmlFor="example" className="block text-sm font-medium text-gray-700 mb-1">
-              Example (optional)
-            </label>
-            <Textarea
-              id="example"
-              value={formData.example}
-              onChange={(e) => setFormData({ ...formData, example: e.target.value })}
-              placeholder="How is this word used in a sentence?"
-              rows={2}
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <Alert className="border-[#B04A39] bg-red-50">
+            <AlertDescription className="text-[#B04A39]">{error}</AlertDescription>
+          </Alert>
+        )}
+        
+        <div>
+          <label htmlFor="definition" className="block text-sm font-medium text-[#4E3629] mb-2">
+            Definition *
+          </label>
+          <Textarea
+            id="definition"
+            value={formData.definition}
+            onChange={(e) => setFormData({ ...formData, definition: e.target.value })}
+            placeholder="Provide a clear, concise definition..."
+            rows={4}
+            required
+            className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent resize-vertical"
+          />
+        </div>
 
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={isSubmitting}
+        <div>
+          <label htmlFor="example" className="block text-sm font-medium text-[#4E3629] mb-2">
+            Example Sentence (optional)
+          </label>
+          <Textarea
+            id="example"
+            value={formData.example}
+            onChange={(e) => setFormData({ ...formData, example: e.target.value })}
+            placeholder="Show how the word is used in context..."
+            rows={2}
+            className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent resize-vertical"
+          />
+        </div>
+
+        <div className="flex space-x-3">
+          <button
+            type="submit"
+            disabled={isSubmitting || !formData.definition}
+            className="flex-1 bruno-button disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Adding...' : 'Add Definition'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+          </button>
+          
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 px-6 py-3 border border-[#8E8B82] text-[#4E3629] rounded-[2px] font-medium transition-colors hover:bg-[#FAF7F3]"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   )
 } 

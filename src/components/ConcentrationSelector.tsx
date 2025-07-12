@@ -30,7 +30,7 @@ export default function ConcentrationSelector({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const chipRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  // Filter concentrations based on search term
+  // Filter concentrations based on search term, treating each concentration as a single unit
   const filteredConcentrations = BROWN_CONCENTRATIONS.filter(concentration =>
     concentration.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -51,10 +51,11 @@ export default function ConcentrationSelector({
     )
   }
 
-  // Handle concentration selection
+  // Handle concentration selection - ensure we're treating each concentration as a single unit
   const handleSelect = useCallback((concentration: string) => {
     if (value.length >= 2) return
     
+    // Add the entire concentration string as one unit
     if (!value.includes(concentration)) {
       onChange([...value, concentration])
     }

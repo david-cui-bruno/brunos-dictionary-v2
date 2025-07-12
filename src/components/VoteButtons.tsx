@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { ArrowUp, ArrowDown } from 'lucide-react'
+import { ThumbsUp, ThumbsDown } from 'lucide-react'
 
 interface VoteButtonsProps {
   definitionId: string
@@ -55,34 +55,38 @@ export default function VoteButtons({
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`p-1 h-auto transition-colors ${
-          userVote === 1 ? 'text-green-600' : 'text-gray-500 hover:text-green-600'
-        }`}
+      <button
         onClick={() => handleVote('up')}
         disabled={isVoting}
+        className={`p-2 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          userVote === 1 
+            ? 'bg-[#4C6B46] text-white' 
+            : 'text-[#8E8B82] hover:bg-[#4C6B46] hover:text-white'
+        }`}
+        aria-label="Vote up"
       >
-        <ArrowUp className="h-4 w-4" />
-      </Button>
-      <span className={`text-sm font-bold ${
-        score > 0 ? 'text-black' : 
-        score < 0 ? 'text-red-600' : 'text-gray-500'
+        <ThumbsUp size={16} />
+      </button>
+      
+      <span className={`text-sm font-medium ${
+        score > 0 ? 'text-[#4C6B46]' : 
+        score < 0 ? 'text-[#B04A39]' : 'text-[#8E8B82]'
       }`}>
         {score}
       </span>
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`p-1 h-auto transition-colors ${
-          userVote === -1 ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
-        }`}
+      
+      <button
         onClick={() => handleVote('down')}
         disabled={isVoting}
+        className={`p-2 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          userVote === -1 
+            ? 'bg-[#B04A39] text-white' 
+            : 'text-[#8E8B82] hover:bg-[#B04A39] hover:text-white'
+        }`}
+        aria-label="Vote down"
       >
-        <ArrowDown className="h-4 w-4" />
-      </Button>
+        <ThumbsDown size={16} />
+      </button>
     </div>
   )
 } 

@@ -8,37 +8,31 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* paper-white */
-    --foreground: 30 25% 15%; /* dark brown text */
-
-    --card: 38 50% 85%; /* cream */
-    --card-foreground: 30 25% 15%;
-
+    --font-inter: "Inter", sans-serif;
+    --font-playfair: "Playfair Display", serif;
+    
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 30 25% 15%;
-
-    --primary: 30 30% 25%; /* primary-brown */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 38 50% 85%; /* cream */
-    --secondary-foreground: 30 25% 15%;
-
-    --muted: 38 50% 85%;
-    --muted-foreground: 30 15% 45%;
-
-    --accent: 0 70% 58%; /* bruno-red */
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 70% 58%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 38 30% 75%;
-    --input: 38 30% 75%;
-    --ring: 0 70% 58%;
-
-    --radius: 0.75rem; /* 12px */
-
-    /* Custom Brown Colors */
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+    
+    /* Legacy Brown colors for compatibility */
     --brown-primary: 30 30% 25%; /* #4E3629 */
     --bruno-red: 0 70% 58%; /* #EE3E3E */
     --cream: 38 50% 85%; /* #F5E6D0 */
@@ -56,6 +50,66 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
+  }
+}
+
+/* Bruno Design System Components */
+@layer components {
+  .bruno-card {
+    @apply bg-white;
+    @apply border;
+    @apply border-[#8E8B82];
+    @apply rounded-[2px];
+    @apply p-5;
+    @apply shadow-[0_4px_12px_rgba(0,0,0,0.1)];
+  }
+
+  .bruno-button {
+    @apply bg-[#B04A39];
+    @apply text-white;
+    @apply px-6;
+    @apply py-3;
+    @apply rounded-[2px];
+    @apply font-medium;
+    @apply transition-all;
+    @apply duration-200;
+    @apply hover:bg-[#9A3E31];
+    @apply hover:scale-105;
+    @apply active:scale-95;
+  }
+
+  .bruno-badge {
+    @apply px-3;
+    @apply py-1;
+    @apply rounded-full;
+    @apply text-sm;
+    @apply font-medium;
+  }
+
+  .bruno-badge-gold {
+    @apply bg-yellow-100;
+    @apply text-yellow-800;
+    @apply border;
+    @apply border-yellow-300;
+  }
+
+  .bruno-badge-silver {
+    @apply bg-gray-100;
+    @apply text-gray-800;
+    @apply border;
+    @apply border-gray-300;
+  }
+
+  .bruno-badge-bronze {
+    @apply bg-orange-100;
+    @apply text-orange-800;
+    @apply border;
+    @apply border-orange-300;
+  }
+
+  .bruno-badge-tag {
+    @apply bg-[#4C6B46];
+    @apply text-white;
   }
 }
 
@@ -87,5 +141,44 @@
   
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Confetti Animation */
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #b04a39;
+  animation: confetti 3s ease-out forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    animation: none;
+  }
+
+  .bruno-button {
+    transition: none;
+  }
+
+  .bruno-button:hover {
+    transform: none;
   }
 } 
