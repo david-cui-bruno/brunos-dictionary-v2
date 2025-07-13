@@ -84,8 +84,11 @@ export async function getWordOfDay(options?: FetchOptions) {
   if (existingWord?.words) {
     // Get only clean definitions and sort by score
     const cleanDefinitions = existingWord.words.definitions
-      ?.filter(def => def.status === 'clean')
-      .sort((a, b) => (b.score || 0) - (a.score || 0)) || []
+      ?.filter((def: { 
+  status: "clean" | "flagged" | "removed" | null;
+  score: number | null;
+}) => def.status === 'clean')
+.sort((a: { score: number | null }, b: { score: number | null }) => (b.score || 0) - (a.score || 0)) || []
 
     console.log('Clean definitions:', cleanDefinitions)
     existingWord.words.definitions = cleanDefinitions.slice(0, 1)
@@ -110,8 +113,11 @@ export async function getWordOfDay(options?: FetchOptions) {
     // Sort and filter definitions for the new word
     if (result.data?.words?.definitions) {
       const cleanDefinitions = result.data.words.definitions
-        .filter(def => def.status === 'clean')
-        .sort((a, b) => (b.score || 0) - (a.score || 0))
+        .filter((def: { 
+  status: "clean" | "flagged" | "removed" | null;
+  score: number | null;
+}) => def.status === 'clean')
+        .sort((a: { score: number | null }, b: { score: number | null }) => (b.score || 0) - (a.score || 0))
       
       console.log('Clean definitions from API:', cleanDefinitions)
       result.data.words.definitions = cleanDefinitions.slice(0, 1)
