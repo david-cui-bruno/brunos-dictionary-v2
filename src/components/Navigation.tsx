@@ -52,7 +52,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-[#54301a] border-b border-[#8E8B82] shadow-sm">
+    <nav className="bg-[#54301a] h-16">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 relative">
           {/* Logo */}
