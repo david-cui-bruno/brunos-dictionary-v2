@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Plus, Search } from "lucide-react";
+import { User, Plus, Search, X } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -14,11 +14,14 @@ const Navigation = () => {
   const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
+      setIsLoading(true);
       router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      setIsLoading(false);
     }
   };
 
@@ -27,14 +30,11 @@ const Navigation = () => {
     setIsRefreshing(true);
     
     try {
-      // Force a complete refresh of the page data
       await Promise.all([
         router.refresh(),
-        // Add a small delay to ensure the refresh completes
         new Promise(resolve => setTimeout(resolve, 100))
       ]);
       
-      // Force revalidation of the page
       const response = await fetch('/', {
         method: 'GET',
         headers: {
@@ -43,7 +43,6 @@ const Navigation = () => {
         }
       });
 
-      // Navigate home with a cache-busting query parameter
       const timestamp = Date.now();
       router.push(`/?refresh=${timestamp}`);
     } finally {
@@ -52,7 +51,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-[#54301a] h-16">
+    <nav className="bg-[#65271c] h-16 relative z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 relative">
           {/* Logo */}
@@ -67,18 +66,39 @@ const Navigation = () => {
             </h1>
           </a>
 
-          {/* Centered Search Bar */}
+          {/* Enhanced Search Bar */}
           <div className="absolute left-1/2 transform -translate-x-1/2 max-w-md w-full">
             <form onSubmit={handleSearch} className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8E8B82] h-4 w-4" />
+              <Search 
+                className={`absolute left-3 top-1/2 transform -translate-y-1/2 
+                  text-[#8E8B82] h-4 w-4 transition-opacity
+                  ${isLoading ? 'animate-spin' : ''}`}
+              />
+              
               <Input
                 type="text"
                 placeholder="Search words..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white text-[#54301a] placeholder:text-[#8E8B82] border-[#8E8B82] focus:border-white focus:ring-white"
-                disabled={isRefreshing}
+                className="pl-10 pr-10 bg-white text-[#65271c] 
+                  placeholder:text-[#8E8B82] border-[#8E8B82]
+                  focus:border-white focus:ring-white
+                  hover:border-[#65271c]
+                  transition-colors
+                  rounded-md"
+                disabled={isRefreshing || isLoading}
               />
+
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2
+                    text-[#8E8B82] hover:text-[#65271c] transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </form>
           </div>
 
@@ -88,7 +108,7 @@ const Navigation = () => {
               <Link
                 href="/add"
                 className={`flex items-center space-x-1 px-3 py-2 rounded-[2px] transition-colors ${
-                  pathname === "/add" ? "bg-white text-[#54301a]" : "text-white hover:bg-white/10"
+                  pathname === "/add" ? "bg-white text-[#65271c]" : "text-white hover:bg-white/10"
                 } ${isRefreshing ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <Plus size={18} />
@@ -103,7 +123,7 @@ const Navigation = () => {
               <Link
                 href="/profile"
                 className={`flex items-center space-x-1 px-3 py-2 rounded-[2px] transition-colors ${
-                  pathname === "/profile" ? "bg-white text-[#54301a]" : "text-white hover:bg-white/10"
+                  pathname === "/profile" ? "bg-white text-[#65271c]" : "text-white hover:bg-white/10"
                 } ${isRefreshing ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <User size={18} />
@@ -117,7 +137,7 @@ const Navigation = () => {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="text-white border-white hover:bg-white hover:text-[#54301a]"
+                  className="bg-[#65271c] text-white border-white hover:bg-white hover:text-[#65271c] transition-colors w-24"
                   disabled={isRefreshing}
                 >
                   Sign In

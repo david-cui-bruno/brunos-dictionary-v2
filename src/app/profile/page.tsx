@@ -15,6 +15,7 @@ import YearSelector from '@/components/YearSelector'
 import { LogOut, Edit3, Trash2 } from "lucide-react"
 import Link from "next/link"
 import WordCard from "@/components/WordCard"
+import { supabaseAdmin } from "@/lib/supabase"
 
 interface UserProfile {
   id: string
@@ -62,6 +63,9 @@ export default function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState<"words" | "settings">("words");
 
+  // Add karma state
+  const [karma, setKarma] = useState(0)
+
   useEffect(() => {
     if (session?.user?.id) {
       fetchUserData()
@@ -96,6 +100,14 @@ export default function ProfilePage() {
         setMyWords(contributionsData.words || [])
         setMyVotes(contributionsData.votes || [])
       }
+
+      // Fetch karma
+      const karmaResponse = await fetch('/api/profile/karma')
+      const karmaData = await karmaResponse.json()
+      
+      if (karmaResponse.ok) {
+        setKarma(karmaData.karma)
+      }
     } catch (err) {
       console.error('Error fetching user data:', err)
     } finally {
@@ -118,7 +130,7 @@ export default function ProfilePage() {
         body: JSON.stringify({
           username: username.trim(),
           gradYear: parseInt(gradYear),
-          concentration: concentrations.join('|') // Store with | delimiter
+          concentration: concentrations.join('|'), // Use pipe separator for storage
         })
       })
 
@@ -204,24 +216,34 @@ export default function ProfilePage() {
                 {initials}
               </div>
 
-              <div className="flex-1">
-                <h1 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">
-                  {userProfile?.username || userProfile?.name}
-                </h1>
-                <p className="text-[#8E8B82] mb-4">
-                  Class of {userProfile?.grad_year} • {concentrations.join(', ')}
-                </p>
+              <div className="flex flex-1 justify-between">
+                <div>
+                  <h1 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">
+                    {userProfile?.username || userProfile?.name}
+                  </h1>
+                  <p className="text-[#8E8B82] text-sm mb-4">
+                    Class of {userProfile?.grad_year} • {concentrations.join(', ')}
+                  </p>
+                </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82]">
-                    <div className="text-2xl font-bold text-[#4E3629]">{myWords.length}</div>
-                    <div className="text-sm text-[#8E8B82]">Words Submitted</div>
-                  </div>
-                  <div className="text-center p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82]">
-                    <div className="text-2xl font-bold text-[#4C6B46]">
-                      {myVotes.length}
+                <div className="flex gap-6">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-end gap-2">
+                      <div className="text-2xl font-bold text-[#4E3629] w-8 text-right">{myWords.length}</div>
+                      <div className="text-sm text-[#4E3629]">words submitted</div>
                     </div>
-                    <div className="text-sm text-[#8E8B82]">Total Karma</div>
+                    <div className="flex items-center justify-end gap-2">
+                      <Link href="/leaderboard">
+                        <div className={`text-2xl font-bold w-8 text-right hover:opacity-80 transition-opacity cursor-pointer ${
+                          karma > 0 ? 'text-[#4C6B46]' : 
+                          karma < 0 ? 'text-[#B04A39]' : 
+                          'text-[#4E3629]'
+                        }`}>
+                          {karma}
+                        </div>
+                      </Link>
+                      <div className="text-sm text-[#4E3629]">total karma</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -301,7 +323,7 @@ export default function ProfilePage() {
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629]"
+                      className="min-h-[40px] w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-brown-primary focus:border-brown-primary"
                     />
                   ) : (
                     <p className="text-[#8E8B82]">{userProfile?.username || userProfile?.name}</p>
@@ -330,7 +352,9 @@ export default function ProfilePage() {
                       placeholder="Add concentration(s)"
                     />
                   ) : (
-                    <p className="text-[#8E8B82]">{userProfile?.concentration}</p>
+                    <p className="text-[#8E8B82]">
+                      {userProfile?.concentration?.split('|').join(', ')}
+                    </p>
                   )}
                 </div>
 
@@ -355,7 +379,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Delete Account Section */}
-              <div className="bruno-card border-[#B04A39] bg-red-50">
+              <div className="bruno-card border-[#B04A39] bg-[#FFFFFF]">
                 <div className="flex space-x-2">
                   {!showDeleteConfirm ? (
                     <>

@@ -10,10 +10,10 @@ export default function AnimatedTitle() {
         1000
       ]}
       wrapper="span"
-      speed={35} // Increased from 50 to 75 for slower typing
+      speed={25}
       cursor={false}
       repeat={1}
-      className="text-5xl font-playfair font-bold"
+      className="text-7xl font-playfair font-bold drop-shadow-[0_6px_8px_rgba(0,0,0,0.6)]" // Increased shadow blur and opacity
     />
   )
 } 

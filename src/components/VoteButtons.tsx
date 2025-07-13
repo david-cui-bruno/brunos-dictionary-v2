@@ -60,8 +60,8 @@ export default function VoteButtons({
         disabled={isVoting}
         className={`p-2 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
           userVote === 1 
-            ? 'bg-[#4C6B46] text-white' 
-            : 'text-[#8E8B82] hover:bg-[#4C6B46] hover:text-white'
+            ? 'bg-[#317a22] text-white' 
+            : 'text-[#8E8B82] hover:bg-[#317a22] hover:text-white'
         }`}
         aria-label="Vote up"
       >
@@ -69,8 +69,8 @@ export default function VoteButtons({
       </button>
       
       <span className={`text-sm font-medium ${
-        score > 0 ? 'text-[#4C6B46]' : 
-        score < 0 ? 'text-[#B04A39]' : 'text-[#8E8B82]'
+        score > 0 ? 'text-[#317a22]' : 
+        score < 0 ? 'text-[#ad4545]' : 'text-[#8E8B82]'
       }`}>
         {score}
       </span>
@@ -80,8 +80,8 @@ export default function VoteButtons({
         disabled={isVoting}
         className={`p-2 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
           userVote === -1 
-            ? 'bg-[#B04A39] text-white' 
-            : 'text-[#8E8B82] hover:bg-[#B04A39] hover:text-white'
+            ? 'bg-[#ad4545] text-white' 
+            : 'text-[#8E8B82] hover:bg-[#ad4545] hover:text-white'
         }`}
         aria-label="Vote down"
       >

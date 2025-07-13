@@ -78,9 +78,9 @@ export default async function HomePage({ searchParams }: Props) {
       </div>
 
       {/* Hero section with background image */}
-      <div className="relative w-full h-[375px] -mt-16 z-0">
+      <div className="relative w-full h-[500px] -mt-16 z-0">
         <Image
-          src="/images/quietgreenbg.jpg"
+          src="/images/saylesbg.jpg"
           alt="Quiet Green at Brown University"
           fill
           className="object-cover blur-[2px]"
@@ -89,18 +89,18 @@ export default async function HomePage({ searchParams }: Props) {
         {/* Increased overlay opacity from bg-black/30 to bg-black/40 */}
         <div className="absolute inset-0 bg-black/40" />
         {/* Reduced pt-20 to pt-12 to move text higher */}
-        <div className="relative h-full flex flex-col items-center justify-center text-center px-4 pt-16">
+        <div className="relative h-full flex flex-col items-center justify-center text-center px-4 pt-12">
           <h1 className="text-white mb-1">
             <AnimatedTitle />
           </h1>
-          <p className="text-xl text-white/90 max-w-2xl">
-            Learn Brown University slang, one word at a time.
+          <p className="text-xl text-white/90 max-w-2xl drop-shadow-[0_6px_8px_rgba(0,0,0,0.6)]">
+            Explore the unique language of Brown University.
           </p>
         </div>
       </div>
 
       {/* Main content starts with container class for padding */}
-      <main className="container mx-auto px-8 sm:px-12 md:px-16 lg:px-24 xl:px-32 pt-6 md:pt-9">
+      <main className="container mx-auto px-8 sm:px-12 md:px-16 lg:px-24 xl:px-32 pt-8 md:pt-12">
         <div className="space-y-4 md:space-y-8">
           {/* Word of the Day and Leaderboard Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -169,7 +169,7 @@ export default async function HomePage({ searchParams }: Props) {
           <section>
             <div className="text-center mb-8">
               <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">Recent Additions</h2>
-              <p className="text-[#8E8B82]">Fresh slang from the Brown community</p>
+              <p className="text-[#8E8B82]">Learn the newest trends from the Brown community</p>
             </div>
             {recentWords.data && recentWords.data.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

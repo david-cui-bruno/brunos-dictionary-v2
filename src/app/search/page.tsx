@@ -100,7 +100,7 @@ function DefinitionCard({
     <div className="bruno-card">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="text-lg font-playfair font-semibold text-[#4E3629] mb-1">
+          <h3 className="text-5xl font-playfair font-semibold text-[#4E3629] mb-1">
             <Link 
               href={`/search?q=${encodeURIComponent(word)}`}
               className="hover:text-[#4E3629]/80 transition-colors cursor-pointer"
@@ -108,17 +108,32 @@ function DefinitionCard({
               {word}
             </Link>
           </h3>
-          <div className="text-sm text-[#8E8B82]">
-            by {definition.created_by || 'Anonymous'}, {definition.created_at ? new Date(definition.created_at).toLocaleDateString() : 'Unknown date'}
-          </div>
+        </div>
+        {/* Moved share button to top right */}
+        <div className="flex items-center">
+          <button 
+            className="p-2 rounded-[2px] hover:bg-[#8E8B82] hover:text-white transition-colors"
+            aria-label="Share definition"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
       {/* Definition Text */}
       <div className="mb-4">
-        <p className="text-base leading-relaxed text-[#4E3629]">
+        <p className="text-lg leading-relaxed text-[#4E3629]">
           {definition.body}
         </p>
+        {/* Only show username or Anonymous */}
+        <div className="text-sm text-[#8E8B82] mt-2">
+          by {definition.author?.username || 'Anonymous'}, {definition.created_at ? 
+            new Date(definition.created_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }) : 'Unknown date'}
+        </div>
       </div>
 
       {/* Example */}
@@ -144,24 +159,13 @@ function DefinitionCard({
         </div>
       )}
 
-      {/* Vote Bar and Share Row */}
-      <div className="flex items-center justify-between pt-4 border-t border-[#8E8B82]/20">
-        {/* Vote Bar */}
+      {/* Vote Bar */}
+      <div className="flex items-center pt-4 border-t border-[#8E8B82]/20">
         <VoteButtons 
           definitionId={definition.id}
           initialScore={definition.score || 0}
           initialUserVote={0}
         />
-
-        {/* Share Row */}
-        <div className="flex items-center space-x-2">
-          <button 
-            className="p-2 rounded-[2px] hover:bg-[#8E8B82] hover:text-white transition-colors"
-            aria-label="Share definition"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-        </div>
       </div>
     </div>
   )

@@ -60,7 +60,7 @@
     @apply border;
     @apply border-[#8E8B82];
     @apply rounded-[2px];
-    @apply p-5;
+    @apply p-8;
     @apply shadow-[0_4px_12px_rgba(0,0,0,0.1)];
   }
 

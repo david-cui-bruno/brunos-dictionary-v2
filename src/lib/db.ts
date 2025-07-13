@@ -15,7 +15,12 @@ export async function getWords(search?: string, options?: FetchOptions) {
     .from('words')
     .select(`
       *,
-      definitions!inner(*)
+      definitions!inner(
+        *,
+        author:author_id (
+          username
+        )
+      )
     `)
     .eq('definitions.status', 'clean')
     .order('word', { ascending: true })

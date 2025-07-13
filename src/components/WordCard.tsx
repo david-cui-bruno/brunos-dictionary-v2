@@ -45,7 +45,7 @@ const WordCard = ({
     <div className="bruno-card">
       <div className="flex justify-between items-start mb-3">
         <Link href={`/search?q=${encodeURIComponent(word)}`} className="flex-1">
-          <h3 className="text-xl font-playfair font-bold text-[#4E3629] hover:text-[#4E3629]/80 transition-colors">
+          <h3 className="text-2xl font-playfair font-bold text-[#4E3629] hover:text-[#4E3629]/80 transition-colors">
             {word}
           </h3>
         </Link>

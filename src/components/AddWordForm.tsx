@@ -103,7 +103,7 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
             type="text"
             value={formData.word}
             onChange={(e) => setFormData({ ...formData, word: e.target.value })}
-            placeholder="e.g., Ratty, The Rock, Shopping Period"
+            placeholder="e.g., Ratty, Scili"
             required
             className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent"
           />
@@ -117,7 +117,7 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
             id="definition"
             value={formData.definition}
             onChange={(e) => setFormData({ ...formData, definition: e.target.value })}
-            placeholder="Provide a clear, concise definition of the term..."
+            placeholder="Type your definition here..."
             rows={4}
             required
             className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent resize-vertical"
@@ -126,21 +126,22 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
 
         <div>
           <label htmlFor="example" className="block text-sm font-medium text-[#4E3629] mb-2">
-            Example Sentence (optional)
+            Example Sentence *
           </label>
           <Input
             id="example"
             type="text"
             value={formData.example}
             onChange={(e) => setFormData({ ...formData, example: e.target.value })}
-            placeholder="Show how the word is used in context..."
+            placeholder="Provide an example of how it's used in a sentence..."
+            required
             className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent"
           />
         </div>
 
         <button
           type="submit"
-          disabled={isSubmitting || !formData.word || !formData.definition}
+          disabled={isSubmitting || !formData.word || !formData.definition || !formData.example}
           className="w-full bruno-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
         >
           {isSubmitting ? (
@@ -158,13 +159,14 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
       </form>
 
       {/* Guidelines */}
-      <div className="bruno-card bg-[#FAF7F3] border-l-4 border-[#4C6B46]">
+      <div className="bruno-card bg-[#FFFFFF] border-l-4 border-[#4C6B46]">
         <h3 className="font-playfair font-bold text-[#4E3629] mb-3">Submission Guidelines</h3>
         <ul className="space-y-2 text-sm text-[#8E8B82]">
           <li>• Words should be specific to Brown University culture</li>
-          <li>• Keep definitions clear and family-friendly</li>
-          <li>• Examples should show authentic usage</li>
+          <li>• Keep definitions clear and don't use offensive or explicit language</li>
+          <li>• Examples should be show authentic usage</li>
           <li>• All submissions are reviewed before publication</li>
+          <li>• This is a community resource, so please be respectful</li>
         </ul>
       </div>
     </div>

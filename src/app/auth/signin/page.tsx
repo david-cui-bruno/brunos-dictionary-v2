@@ -33,7 +33,7 @@ export default function SignInPage() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-center text-gray-600 mb-6">
-                Use your Brown University Google account to access the dictionary.
+                Use your Brown University Google account to add to the dictionary.
               </p>
               
               <Button 
