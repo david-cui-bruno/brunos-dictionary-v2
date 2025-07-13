@@ -35,17 +35,6 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to delete user data' }, { status: 500 })
     }
 
-    // Delete user's search logs
-    const { error: searchLogsError } = await supabaseAdmin
-      .from('search_logs')
-      .delete()
-      .eq('user_id', userId)
-
-    if (searchLogsError) {
-      console.error('Error deleting search logs:', searchLogsError)
-      return NextResponse.json({ error: 'Failed to delete user data' }, { status: 500 })
-    }
-
     // Delete user's definitions
     const { error: definitionsError } = await supabaseAdmin
       .from('definitions')
