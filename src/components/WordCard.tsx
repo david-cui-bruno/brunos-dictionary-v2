@@ -59,9 +59,9 @@ const WordCard = ({
       </div>
       
       <Link href={`/search?q=${encodeURIComponent(word)}`}>
-        <p className="text-[#4E3629] mb-3 leading-relaxed">{definition}</p>
+        <p className="text-[#4E3629]/80 mb-3 leading-relaxed">{definition}</p>
         {example && (
-          <p className="text-[#8E8B82] italic mb-4">"{example}"</p>
+          <p className="text-[#8E8B82]/80 italic mb-4">"{example}"</p>
         )}
       </Link>
 

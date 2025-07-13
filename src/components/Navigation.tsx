@@ -52,7 +52,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-[#8E8B82] shadow-sm">
+    <nav className="bg-[#54301a] border-b border-[#8E8B82] shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 relative">
           {/* Logo */}
@@ -62,7 +62,7 @@ const Navigation = () => {
             className={`flex items-center space-x-2 ${isRefreshing ? 'opacity-70' : ''}`}
             style={{ pointerEvents: isRefreshing ? 'none' : 'auto' }}
           >
-            <h1 className="text-2xl font-playfair font-bold text-[#4E3629]">
+            <h1 className="text-2xl font-playfair font-bold text-white">
               {isRefreshing ? 'Refreshing...' : "Bruno's Dictionary"}
             </h1>
           </a>
@@ -76,7 +76,7 @@ const Navigation = () => {
                 placeholder="Search words..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white text-[#4E3629] placeholder:text-[#8E8B82] border-[#8E8B82] focus:border-[#4E3629] focus:ring-[#4E3629]"
+                className="pl-10 bg-white text-[#54301a] placeholder:text-[#8E8B82] border-[#8E8B82] focus:border-white focus:ring-white"
                 disabled={isRefreshing}
               />
             </form>
@@ -88,7 +88,7 @@ const Navigation = () => {
               <Link
                 href="/add"
                 className={`flex items-center space-x-1 px-3 py-2 rounded-[2px] transition-colors ${
-                  pathname === "/add" ? "bg-[#4E3629] text-white" : "text-[#4E3629] hover:bg-[#FAF7F3]"
+                  pathname === "/add" ? "bg-white text-[#54301a]" : "text-white hover:bg-white/10"
                 } ${isRefreshing ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <Plus size={18} />
@@ -103,7 +103,7 @@ const Navigation = () => {
               <Link
                 href="/profile"
                 className={`flex items-center space-x-1 px-3 py-2 rounded-[2px] transition-colors ${
-                  pathname === "/profile" ? "bg-[#4E3629] text-white" : "text-[#4E3629] hover:bg-[#FAF7F3]"
+                  pathname === "/profile" ? "bg-white text-[#54301a]" : "text-white hover:bg-white/10"
                 } ${isRefreshing ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <User size={18} />
@@ -117,7 +117,7 @@ const Navigation = () => {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="text-[#4E3629] border-[#8E8B82] hover:bg-[#4E3629] hover:text-white hover:border-[#4E3629]"
+                  className="text-white border-white hover:bg-white hover:text-[#54301a]"
                   disabled={isRefreshing}
                 >
                   Sign In

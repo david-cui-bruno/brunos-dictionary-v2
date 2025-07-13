@@ -61,9 +61,13 @@ export async function getWordBySlug(slug: string, userId?: string) {
 }
 
 export async function getWordOfDay(options?: FetchOptions) {
+  console.log('getWordOfDay called with options:', options)
   const today = new Date().toISOString().split('T')[0]
+  console.log('Today\'s date:', today)
   
-  const { data, error } = await supabase
+  // First try to get today's word
+  console.log('Checking Supabase for today\'s word...')
+  const { data: existingWord, error } = await supabase
     .from('word_of_day')
     .select(`
       *,
@@ -75,18 +79,49 @@ export async function getWordOfDay(options?: FetchOptions) {
     .eq('date', today)
     .single()
 
-  if (data?.words) {
-    // Filter definitions to only clean ones
-    const { data: definitions } = await supabase
-      .from('definitions')
-      .select('*')
-      .eq('word_id', data.words.id)
-      .eq('status', 'clean')
+  console.log('Supabase response:', { existingWord, error })
 
-    data.words.definitions = definitions || []
+  if (existingWord?.words) {
+    // Get only clean definitions and sort by score
+    const cleanDefinitions = existingWord.words.definitions
+      ?.filter(def => def.status === 'clean')
+      .sort((a, b) => (b.score || 0) - (a.score || 0)) || []
+
+    console.log('Clean definitions:', cleanDefinitions)
+    existingWord.words.definitions = cleanDefinitions.slice(0, 1)
+    return { data: existingWord, error: null }
   }
 
-  return { data, error }
+  // If no word exists for today, call the API to generate one
+  console.log('No existing word found, calling API...')
+  try {
+    const response = await fetch('/api/word-of-day', {
+      method: 'GET',
+      ...options
+    })
+    console.log('API response status:', response.status)
+    const result = await response.json()
+    console.log('API response data:', result)
+    
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to get word of day')
+    }
+
+    // Sort and filter definitions for the new word
+    if (result.data?.words?.definitions) {
+      const cleanDefinitions = result.data.words.definitions
+        .filter(def => def.status === 'clean')
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+      
+      console.log('Clean definitions from API:', cleanDefinitions)
+      result.data.words.definitions = cleanDefinitions.slice(0, 1)
+    }
+
+    return { data: result.data, error: null }
+  } catch (err) {
+    console.error('Error fetching word of day:', err)
+    return { data: null, error: err as Error }
+  }
 }
 
 export async function getUserProfile(userId: string) {

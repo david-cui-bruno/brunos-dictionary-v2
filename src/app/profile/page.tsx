@@ -356,43 +356,51 @@ export default function ProfilePage() {
 
               {/* Delete Account Section */}
               <div className="bruno-card border-[#B04A39] bg-red-50">
-                <h3 className="text-lg font-playfair font-bold text-[#B04A39] mb-2">Danger Zone</h3>
-                <p className="text-[#8E8B82] mb-4">
-                  Once you delete your account, there is no going back. Please be certain.
-                </p>
-                {!showDeleteConfirm ? (
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    onClick={() => setShowDeleteConfirm(true)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Account
-                  </Button>
-                ) : (
-                  <div className="space-y-3">
-                    <Button 
-                      variant="destructive" 
-                      onClick={handleDeleteAccount}
-                      disabled={isDeleting}
-                      size="sm"
-                      className="w-full"
-                    >
-                      {isDeleting ? 'Deleting...' : 'Yes, Delete My Account'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowDeleteConfirm(false)}
-                      size="sm"
-                      className="w-full"
-                    >
-                      Cancel
-                    </Button>
-                    {deleteError && (
-                      <p className="text-red-500 text-sm">{deleteError}</p>
-                    )}
-                  </div>
-                )}
+                <div className="flex space-x-2">
+                  {!showDeleteConfirm ? (
+                    <>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => setShowDeleteConfirm(true)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="space-y-3 w-full">
+                      <Button 
+                        variant="destructive" 
+                        onClick={handleDeleteAccount}
+                        disabled={isDeleting}
+                        size="sm"
+                        className="w-full"
+                      >
+                        {isDeleting ? 'Deleting...' : 'Yes, Delete My Account'}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowDeleteConfirm(false)}
+                        size="sm"
+                        className="w-full"
+                      >
+                        Cancel
+                      </Button>
+                      {deleteError && (
+                        <p className="text-red-500 text-sm">{deleteError}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
