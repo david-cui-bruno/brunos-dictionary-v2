@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import ConcentrationSelector from '@/components/ConcentrationSelector'
 import YearSelector from '@/components/YearSelector'
-import { LogOut, Edit3, Trash2 } from "lucide-react"
+import { LogOut, Edit3, Trash2, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
 import WordCard from "@/components/WordCard"
 import { supabaseAdmin } from "@/lib/supabase"
@@ -66,6 +66,10 @@ export default function ProfilePage() {
   // Add karma state
   const [karma, setKarma] = useState(0)
 
+  // Load more state
+  const [displayedWords, setDisplayedWords] = useState<Word[]>([])
+  const [wordsToShow, setWordsToShow] = useState(4)
+
   useEffect(() => {
     if (session?.user?.id) {
       fetchUserData()
@@ -81,6 +85,11 @@ export default function ProfilePage() {
       setConcentrations(userProfile.concentration ? userProfile.concentration.split('|') : [])
     }
   }, [userProfile])
+
+  // Update displayed words when myWords changes
+  useEffect(() => {
+    setDisplayedWords(myWords.slice(0, wordsToShow))
+  }, [myWords, wordsToShow])
 
   const fetchUserData = async () => {
     try {
@@ -174,6 +183,10 @@ export default function ProfilePage() {
     } finally {
       setIsDeleting(false)
     }
+  }
+
+  const handleLoadMore = () => {
+    setWordsToShow(prev => prev + 4)
   }
 
   // Show profile setup if user hasn't completed their profile
@@ -276,19 +289,43 @@ export default function ProfilePage() {
               <h2 className="text-2xl font-playfair font-bold text-[#4E3629]">Words You've Added</h2>
 
               {myWords.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {myWords.map((word) => (
-                    <WordCard
-                      key={word.id}
-                      word={word.word}
-                      definition={word.definitions?.[0]?.body || "No definition available"}
-                      example={word.definitions?.[0]?.example}
-                      slug={word.slug}
-                      definitionId={word.definitions?.[0]?.id}
-                      score={word.definitions?.[0]?.score || 0}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {displayedWords.map((word) => (
+                      <WordCard
+                        key={word.id}
+                        word={word.word}
+                        definition={word.definitions?.[0]?.body || "No definition available"}
+                        example={word.definitions?.[0]?.example}
+                        slug={word.slug}
+                        definitionId={word.definitions?.[0]?.id}
+                        score={word.definitions?.[0]?.score || 0}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex justify-center mt-16 gap-6">
+                    {displayedWords.length < myWords.length && (
+                      <button
+                        onClick={handleLoadMore}
+                        className="flex items-center text-[#8E8B82] font-medium hover:underline focus:outline-none bg-transparent border-none p-0 cursor-pointer"
+                        style={{ boxShadow: "none" }}
+                      >
+                        Load More
+                        <ChevronDown className="ml-1" size={18} />
+                      </button>
+                    )}
+                    {displayedWords.length > 4 && (
+                      <button
+                        onClick={() => setWordsToShow(4)}
+                        className="flex items-center text-[#8E8B82] font-medium hover:underline focus:outline-none bg-transparent border-none p-0 cursor-pointer"
+                        style={{ boxShadow: "none" }}
+                      >
+                        Show Less
+                        <ChevronUp className="ml-1" size={18} />
+                      </button>
+                    )}
+                  </div>
+                </>
               ) : (
                 <div className="bruno-card text-center py-12">
                   <div className="text-6xl mb-4">📝</div>

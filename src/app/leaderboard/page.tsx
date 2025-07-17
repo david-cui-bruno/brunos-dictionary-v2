@@ -2,6 +2,22 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { supabaseAdmin } from '@/lib/supabase'
 
+interface User {
+  id: string
+  username: string
+  karma: number
+}
+
+interface Vote {
+  value: number
+  user_id: string
+}
+
+interface Definition {
+  author_id: string
+  votes: Vote[]
+}
+
 async function getLeaderboard() {
   // Get all words to count per user (2 points each)
   const { data: words, error: wordsError } = await supabaseAdmin
@@ -47,10 +63,10 @@ async function getLeaderboard() {
   })
 
   // Process votes - only count upvotes once whether given or received
-  votesReceived.forEach((def: any) => {
+  votesReceived.forEach((def: Definition) => {
     const authorId = def.author_id
     
-    def.votes?.forEach((vote: any) => {
+    def.votes?.forEach((vote: Vote) => {
       const voterId = vote.user_id
       
       if (vote.value > 0) {
@@ -66,30 +82,26 @@ async function getLeaderboard() {
     })
   })
 
-  // Get user details and combine with karma
+  // Get user details for top users
+  const userIds = Object.keys(karmaMap).slice(0, 20) // Top 20 users
   const { data: users, error: usersError } = await supabaseAdmin
     .from('users')
-    .select('id, netid, name, grad_year')
+    .select('id, username')
+    .in('id', userIds)
 
-  if (!users || usersError) {
-    throw usersError || new Error('No users found')
+  if (usersError) {
+    console.error('Users fetch error:', usersError)
+    throw usersError
   }
 
-  // Combine user data with karma and sort
-  type User = {
-    id: string;
-    netid: string;
-    name?: string;
-    grad_year?: number;
-    concentration?: string;
-  }
-
-  const leaderboard = users.map(user => ({
-    ...user,
-    karma: karmaMap[user.id] || 0
-  }))
+  // Combine user data with karma
+  const leaderboard: User[] = users
+    .map(user => ({
+      id: user.id,
+      username: user.username || 'Anonymous',
+      karma: karmaMap[user.id] || 0
+    }))
     .sort((a, b) => b.karma - a.karma)
-    .slice(0, 50)
 
   return leaderboard
 }
@@ -102,47 +114,30 @@ export default async function LeaderboardPage() {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-playfair font-bold text-[#4E3629]">
-              Karma Leaderboard
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-playfair font-bold text-[#4E3629] mb-2">
+              Leaderboard
             </h1>
             <p className="text-[#8E8B82]">
               Top contributors to Bruno's Dictionary
             </p>
           </div>
 
-          {/* Leaderboard */}
           <div className="bruno-card">
-            <div className="space-y-2">
-              {users.map((user: any, index: number) => (
-                <div 
-                  key={user.id}
-                  className="flex items-center justify-between py-0.25 border-b border-[#8E8B82]/20 last:border-0"
-                >
-                  {/* Rank & User Info */}
-                  <div className="flex items-center gap-6">
-                    <div className="text-3xl font-bold text-[#000000] w-8">
+            <div className="space-y-4">
+              {users.map((user: User, index: number) => (
+                <div key={user.id} className="flex items-center justify-between p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82]">
+                  <div className="flex items-center space-x-4">
+                    <span className="text-[#4E3629] text-lg font-bold w-8 text-center">
                       {index + 1}
-                    </div>
-                    <div>
-                      <div className="font-medium text-[#4E3629]">
-                        {user.username || user.name}
-                      </div>
-                      <div className="text-xs text-[#8E8B82]">
-                        Class of {user.grad_year}
-                      </div>
-                    </div>
+                    </span>
+                    <span className="text-lg font-playfair font-semibold text-[#4E3629]">
+                      {user.username}
+                    </span>
                   </div>
-
-                  {/* Karma Score */}
-                  <div className={`text-xl font-bold ${
-                    user.karma > 0 ? 'text-[#4C6B46]' : 
-                    user.karma < 0 ? 'text-[#B04A39]' : 
-                    'text-[#4E3629]'
-                  }`}>
-                    {user.karma}
+                  <div className="text-[#8E8B82] font-medium">
+                    {user.karma} points
                   </div>
                 </div>
               ))}

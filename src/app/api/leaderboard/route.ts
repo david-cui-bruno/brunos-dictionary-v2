@@ -3,34 +3,41 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all users with their karma scores
-    const { data: users, error } = await supabaseAdmin
-      .from('users')
+    // Get all words with their definitions and scores
+    const { data: words, error } = await supabaseAdmin
+      .from('words')
       .select(`
         id,
-        username,
-        name,
-        grad_year,
-        concentration,
-        (
-          SELECT 
-            COALESCE(SUM(value), 0)
-          FROM votes v
-          JOIN definitions d ON d.id = v.definition_id
-          WHERE d.created_by = users.id
-        ) as karma
+        word,
+        definitions (
+          id,
+          score
+        )
       `)
-      .order('karma', { ascending: false })
-      .limit(50)
+      .eq('definitions.status', 'clean')
 
     if (error) {
       console.error('Leaderboard fetch error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 })
     }
 
-    return NextResponse.json({ users: users || [] })
+    // Process words to get highest scoring definition for each
+    const processedWords = words?.map(word => {
+      const highestScoreDef = word.definitions?.reduce((max, def) => 
+        (def.score ?? 0) > (max.score ?? 0) ? def : max
+      , word.definitions[0]);
+      
+      return {
+        id: word.id,
+        word: word.word,
+        score: highestScoreDef?.score || 0,
+        definitions: word.definitions
+      };
+    }).sort((a, b) => b.score - a.score) || [];
+
+    return NextResponse.json({ words: processedWords })
   } catch (error) {
-    console.error('Leaderboard fetch error:', error)
+    console.error('Leaderboard error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 } 

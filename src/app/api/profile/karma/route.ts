@@ -3,6 +3,16 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 
+interface Vote {
+  value: number
+  user_id: string
+}
+
+interface Definition {
+  author_id: string
+  votes: Vote[]
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -13,17 +23,22 @@ export async function GET(request: NextRequest) {
 
     const userId = session.user.id
 
-    // Get words (2 points each)
-    const { data: words } = await supabaseAdmin
+    // Get user's words (2 points each)
+    const { data: words, error: wordsError } = await supabaseAdmin
       .from('words')
       .select('id')
       .eq('created_by', userId)
 
-    // Get definitions with votes
-    const { data: definitions } = await supabaseAdmin
+    if (wordsError) {
+      console.error('Words fetch error:', wordsError)
+      return NextResponse.json({ error: wordsError.message }, { status: 500 })
+    }
+
+    // Get user's definitions with votes
+    const { data: definitions, error: defError } = await supabaseAdmin
       .from('definitions')
       .select(`
-        id,
+        author_id,
         votes (
           value,
           user_id
@@ -31,41 +46,35 @@ export async function GET(request: NextRequest) {
       `)
       .eq('author_id', userId)
 
-    // Get votes given to others
-    const { data: votesGiven } = await supabaseAdmin
-      .from('votes')
-      .select('definition_id, value')
-      .eq('user_id', userId)
+    if (defError) {
+      console.error('Definitions fetch error:', defError)
+      return NextResponse.json({ error: defError.message }, { status: 500 })
+    }
 
-    // Calculate karma
-    let totalKarma = 0
+    let karma = 0
 
-    // Add 2 points per word
-    totalKarma += (words?.length || 0) * 2
+    // Add 2 points per word created
+    karma += (words?.length || 0) * 2
 
-    // Add points for votes received (excluding self-votes)
-    definitions?.forEach((def) => {
-      def.votes?.forEach((vote: any) => {
+    // Calculate karma from votes
+    definitions?.forEach((def: Definition) => {
+      def.votes?.forEach((vote: Vote) => {
+        const voterId = vote.user_id
+        
         if (vote.value > 0) {
-          if (vote.user_id === userId) {
-            // Self-vote: count only once
-            totalKarma += 1
+          if (voterId === userId) {
+            // Self-vote: count only once as a vote given
+            karma += 1
           } else {
-            // Vote from another user
-            totalKarma += 1
+            // Vote from another user: count once for receiving
+            karma += 1
           }
         }
       })
     })
 
-    // Add points for votes given to others
-    votesGiven?.forEach((vote) => {
-      if (vote.value && vote.value > 0) {
-        totalKarma += 1
-      }
-    })
+    return NextResponse.json({ karma })
 
-    return NextResponse.json({ karma: totalKarma })
   } catch (error) {
     console.error('Karma fetch error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

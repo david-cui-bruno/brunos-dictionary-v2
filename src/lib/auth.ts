@@ -11,15 +11,9 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log('=== SIGNIN CALLBACK STARTED ===')
-      console.log('User:', user)
-      console.log('Account:', account)
-      console.log('Profile:', profile)
-      
       try {
         // Check if email is from Brown University
         if (!user.email?.endsWith('@brown.edu')) {
-          console.log('Non-Brown email rejected:', user.email)
           return false
         }
         
@@ -41,8 +35,8 @@ export const authOptions: NextAuthOptions = {
               netid: netid,
               name: user.name,
               email: user.email,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              grad_year: null,
+              concentration: null
             })
             .select()
             .single()
@@ -51,14 +45,6 @@ export const authOptions: NextAuthOptions = {
             console.error('Error inserting user:', error)
             return false
           }
-          
-          // Update the user object with our generated ID
-          user.id = newUser.id
-          console.log('User successfully inserted into database')
-        } else {
-          // Use the existing user's ID
-          user.id = existingUser.id
-          console.log('User already exists in database')
         }
         
         return true
@@ -68,29 +54,16 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async jwt({ token, user }) {
-      console.log('JWT callback:', { token, user })
       if (user) {
         token.id = user.id
-        token.email = user.email || ''
-        // Extract netid for JWT
-        token.netid = user.email?.replace('@brown.edu', '') || ''
       }
       return token
     },
     async session({ session, token }) {
-      console.log('Session callback:', { session, token })
-      if (token) {
+      if (token?.id) {
         session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.netid = token.netid as string
       }
       return session
-    },
-    async redirect({ url, baseUrl }) {
-      // Simplify the redirect logic
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
     }
   },
   pages: {
@@ -98,6 +71,6 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
 } 

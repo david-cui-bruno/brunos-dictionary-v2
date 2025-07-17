@@ -14,35 +14,91 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action_type: string
+          admin_id: string | null
+          created_at: string | null
+          id: string
+          reason: string | null
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          action_type: string
+          admin_id?: string | null
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string | null
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_actions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       definitions: {
         Row: {
+          admin_notes: string | null
+          ai_moderation_categories: Json | null
+          ai_moderation_flagged_at: string | null
+          ai_moderation_score: number | null
           author_id: string | null
           body: string
           created_at: string | null
           example: string | null
           id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           score: number | null
           status: Database["public"]["Enums"]["definition_status"] | null
           updated_at: string | null
           word_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
+          ai_moderation_categories?: Json | null
+          ai_moderation_flagged_at?: string | null
+          ai_moderation_score?: number | null
           author_id?: string | null
           body: string
           created_at?: string | null
           example?: string | null
           id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           score?: number | null
           status?: Database["public"]["Enums"]["definition_status"] | null
           updated_at?: string | null
           word_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
+          ai_moderation_categories?: Json | null
+          ai_moderation_flagged_at?: string | null
+          ai_moderation_score?: number | null
           author_id?: string | null
           body?: string
           created_at?: string | null
           example?: string | null
           id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           score?: number | null
           status?: Database["public"]["Enums"]["definition_status"] | null
           updated_at?: string | null
@@ -52,6 +108,13 @@ export type Database = {
           {
             foreignKeyName: "definitions_author_id_fkey"
             columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "definitions_reviewed_by_fkey"
+            columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -67,6 +130,7 @@ export type Database = {
       }
       flags: {
         Row: {
+          additional_comments: string | null
           created_at: string | null
           definition_id: string | null
           flagger_id: string | null
@@ -74,6 +138,7 @@ export type Database = {
           reason: Database["public"]["Enums"]["flag_reason"]
         }
         Insert: {
+          additional_comments?: string | null
           created_at?: string | null
           definition_id?: string | null
           flagger_id?: string | null
@@ -81,6 +146,7 @@ export type Database = {
           reason: Database["public"]["Enums"]["flag_reason"]
         }
         Update: {
+          additional_comments?: string | null
           created_at?: string | null
           definition_id?: string | null
           flagger_id?: string | null
@@ -104,29 +170,93 @@ export type Database = {
           },
         ]
       }
-      search_logs: {
+      moderation_audit_log: {
         Row: {
+          action_type: string
+          ai_categories: Json | null
+          ai_score: number | null
+          created_at: string | null
+          definition_id: string | null
           id: string
-          searched_at: string | null
-          term: string
-          user_id: string | null
+          performed_by: string | null
+          reason: string | null
         }
         Insert: {
+          action_type: string
+          ai_categories?: Json | null
+          ai_score?: number | null
+          created_at?: string | null
+          definition_id?: string | null
           id?: string
-          searched_at?: string | null
-          term: string
-          user_id?: string | null
+          performed_by?: string | null
+          reason?: string | null
         }
         Update: {
+          action_type?: string
+          ai_categories?: Json | null
+          ai_score?: number | null
+          created_at?: string | null
+          definition_id?: string | null
           id?: string
-          searched_at?: string | null
-          term?: string
-          user_id?: string | null
+          performed_by?: string | null
+          reason?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "search_logs_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "moderation_audit_log_definition_id_fkey"
+            columns: ["definition_id"]
+            isOneToOne: false
+            referencedRelation: "definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_audit_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_queue: {
+        Row: {
+          admin_notes: string | null
+          definition_id: string | null
+          flagged_at: string | null
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          definition_id?: string | null
+          flagged_at?: string | null
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          definition_id?: string | null
+          flagged_at?: string | null
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_queue_definition_id_fkey"
+            columns: ["definition_id"]
+            isOneToOne: false
+            referencedRelation: "definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_queue_reviewed_by_fkey"
+            columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -135,31 +265,40 @@ export type Database = {
       }
       users: {
         Row: {
+          concentration: string | null
           created_at: string | null
           email: string
           grad_year: number | null
           id: string
+          is_admin: boolean | null
           name: string | null
           netid: string
           updated_at: string | null
+          username: string | null
         }
         Insert: {
+          concentration?: string | null
           created_at?: string | null
           email: string
           grad_year?: number | null
           id?: string
+          is_admin?: boolean | null
           name?: string | null
           netid: string
           updated_at?: string | null
+          username?: string | null
         }
         Update: {
+          concentration?: string | null
           created_at?: string | null
           email?: string
           grad_year?: number | null
           id?: string
+          is_admin?: boolean | null
           name?: string | null
           netid?: string
           updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
       }
@@ -268,6 +407,13 @@ export type Database = {
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
+      }
+      get_trending_searches: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          term: string
+          count: number
+        }[]
       }
       gtrgm_compress: {
         Args: { "": unknown }
@@ -391,7 +537,12 @@ export type Database = {
       }
     }
     Enums: {
-      definition_status: "clean" | "flagged" | "removed"
+      definition_status:
+        | "clean"
+        | "flagged"
+        | "removed"
+        | "pending_review"
+        | "ai_flagged"
       flag_reason:
         | "inappropriate"
         | "spam"
@@ -525,7 +676,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      definition_status: ["clean", "flagged", "removed"],
+      definition_status: [
+        "clean",
+        "flagged",
+        "removed",
+        "pending_review",
+        "ai_flagged",
+      ],
       flag_reason: [
         "inappropriate",
         "spam",

@@ -13,7 +13,7 @@ export default function AnimatedTitle() {
       speed={25}
       cursor={false}
       repeat={1}
-      className="text-7xl font-playfair font-bold drop-shadow-[0_6px_8px_rgba(0,0,0,0.6)]" // Increased shadow blur and opacity
+      className="text-6xl md:text-7xl font-playfair font-bold drop-shadow-[0_6px_8px_rgba(0,0,0,0.6)]"
     />
   )
 } 

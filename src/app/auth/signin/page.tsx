@@ -1,16 +1,22 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
 export default function SignInPage() {
+  const searchParams = useSearchParams()
+  
   const handleGoogleSignIn = async () => {
     try {
+      // Get the callbackUrl from the URL or default to '/'
+      const callbackUrl = searchParams.get('callbackUrl') || '/'
+      
       await signIn('google', {
-        callbackUrl: '/',
+        callbackUrl,
         redirect: true
       })
     } catch (error) {

@@ -15,6 +15,7 @@ import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation';
 import AnimatedTitle from '@/components/AnimatedTitle'
 import { motion } from 'framer-motion'
+import LiveLeaderboard from '@/components/LiveLeaderboard'
 
 type Props = {
   searchParams: { refresh?: string }
@@ -101,7 +102,7 @@ export default async function HomePage({ searchParams }: Props) {
 
       {/* Main content starts with container class for padding */}
       <main className="container mx-auto px-8 sm:px-12 md:px-16 lg:px-24 xl:px-32 pt-8 md:pt-12">
-        <div className="space-y-4 md:space-y-8">
+        <div className="space-y-8 md:space-y-12"> {/* Increased base spacing and md spacing */}
           {/* Word of the Day and Leaderboard Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Word of the Day */}
@@ -122,51 +123,13 @@ export default async function HomePage({ searchParams }: Props) {
                 <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-1">Top Words</h2>
               </div>
               <div className="min-h-[300px]">
-                {processedPopularWords.length > 0 ? (
-                  <div className="bruno-card max-w-md mx-auto">
-                    <div className="space-y-4">
-                      {processedPopularWords.slice(0, 3).map((word, index) => (
-                        <div key={word.id} className="flex items-center justify-between p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82]">
-                          <div className="flex items-center space-x-4">
-                            <span className={`bruno-badge ${index === 0 ? '' : index === 1 ? '' : index === 2 ? '' : 'bg-[#8E8B82] text-white'} text-lg font-bold w-8 text-center`}>
-                              {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
-                            </span>
-                            <div>
-                              <Link 
-                                href={`/search?q=${encodeURIComponent(word.word)}`}
-                                className="hover:text-[#4E3629]/80 transition-colors"
-                              >
-                                <h3 className="text-lg font-playfair font-semibold text-[#4E3629] cursor-pointer">
-                                  {word.word}
-                                </h3>
-                              </Link>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 text-[#8E8B82]">
-                            <TrendingUp className="h-4 w-4" />
-                            <span className="text-sm font-medium">
-                              {word.definitions?.[0]?.score || 0}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bruno-card text-center py-12">
-                    <div className="text-6xl mb-4">📊</div>
-                    <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
-                      No popular words yet
-                    </h3>
-                    <p className="text-[#8E8B82]">Be the first to add words and build the community!</p>
-                  </div>
-                )}
+                <LiveLeaderboard />
               </div>
             </section>
           </div>
 
           {/* Recent Words */}
-          <section>
+          <section> {/* Remove the pt-8 sm:pt-0 */}
             <div className="text-center mb-8">
               <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">Recent Additions</h2>
               <p className="text-[#8E8B82]">Learn the newest trends from the Brown community</p>
@@ -175,15 +138,17 @@ export default async function HomePage({ searchParams }: Props) {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recentWords.data.slice(0, 9).map((word, index) => {
                   const row = Math.floor(index / 3)
+                  const definition = word.definitions?.[0]
+                  
                   return (
                     <AnimatedWordCard
                       key={word.id}
                       word={word.word}
-                      definition={word.definitions?.[0]?.body || "No definition available"}
-                      example={word.definitions?.[0]?.example}
+                      definition={definition?.body || "No definition available"}
+                      example={definition?.example}
                       slug={word.slug}
-                      definitionId={word.definitions?.[0]?.id}
-                      score={word.definitions?.[0]?.score || 0}
+                      definitionId={definition?.id}
+                      score={definition?.score || 0}
                       index={index}
                       row={row}
                     />

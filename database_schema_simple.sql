@@ -89,3 +89,33 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_words_updated_at BEFORE UPDATE ON public.words FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_definitions_updated_at BEFORE UPDATE ON public.definitions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 
+
+-- Add admin role to users table
+ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
+
+-- Add moderation fields to definitions
+ALTER TABLE definitions ADD COLUMN reviewed_by UUID REFERENCES users(id);
+ALTER TABLE definitions ADD COLUMN reviewed_at TIMESTAMPTZ;
+ALTER TABLE definitions ADD COLUMN admin_notes TEXT;
+
+-- Create admin actions log
+CREATE TABLE admin_actions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    admin_id UUID REFERENCES users(id),
+    action_type TEXT NOT NULL,
+    target_type TEXT NOT NULL,
+    target_id UUID NOT NULL,
+    reason TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create moderation queue
+CREATE TABLE moderation_queue (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    definition_id UUID REFERENCES definitions(id),
+    status TEXT DEFAULT 'pending',
+    flagged_at TIMESTAMPTZ DEFAULT NOW(),
+    reviewed_at TIMESTAMPTZ,
+    reviewed_by UUID REFERENCES users(id),
+    admin_notes TEXT
+); 

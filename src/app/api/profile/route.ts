@@ -26,6 +26,26 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid graduation year' }, { status: 400 })
     }
 
+    // Check if username is already taken by another user
+    const { data: existingUser, error: checkError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('username', username.trim())
+      .neq('id', session.user.id)  // Exclude current user
+      .single()
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows found
+      console.error('Username check error:', checkError)
+      return NextResponse.json({ error: 'Error checking username availability' }, { status: 500 })
+    }
+
+    if (existingUser) {
+      return NextResponse.json({ 
+        error: 'Username is already taken. Please choose another one.',
+        code: 'USERNAME_TAKEN'
+      }, { status: 409 })
+    }
+
     // Update user profile
     const { error } = await supabaseAdmin
       .from('users')

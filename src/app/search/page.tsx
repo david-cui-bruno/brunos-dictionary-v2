@@ -1,18 +1,60 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import VoteButtons from '@/components/VoteButtons'
-import { getWords } from '@/lib/db'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Share2, Copy } from 'lucide-react'
+import FlagButton from '@/components/FlagButton'
+import { Share2 } from 'lucide-react'
 import Link from 'next/link'
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q?: string }
-}) {
-  const words = await getWords(searchParams.q)
+interface SearchResult {
+  id: string
+  body: string
+  example?: string
+  score: number
+  created_at: string
+  words: {
+    id: string
+    word: string
+    slug: string
+  }
+  users: {
+    username: string  // Changed from name to username
+  }
+}
+
+export default function SearchPage() {
+  const searchParams = useSearchParams()
+  const query = searchParams.get('q') || ''
+  const [results, setResults] = useState<SearchResult[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (query.trim()) {
+      searchWords()
+    }
+  }, [query])
+
+  const searchWords = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setResults(data.results || [])
+      } else {
+        const errorData = await response.json()
+        console.error('Search error data:', errorData)
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF7F3]">
@@ -22,14 +64,14 @@ export default async function SearchPage({
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Search Header */}
           <div className="text-center space-y-4">
-            {searchParams.q ? (
+            {query ? (
               <>
                 <h1 className="text-4xl font-playfair font-bold text-[#4E3629]">
-                  Results for "{searchParams.q}"
+                  Results for "{query}"
                 </h1>
                 <p className="text-[#8E8B82]">
-                  {words.data && words.data.length > 0 
-                    ? `Found ${words.data.length} result${words.data.length === 1 ? '' : 's'}`
+                  {results.length > 0 
+                    ? `Found ${results.length} result${results.length === 1 ? '' : 's'}`
                     : 'No results found'
                   }
                 </p>
@@ -46,37 +88,43 @@ export default async function SearchPage({
 
           {/* Results Container */}
           <div className="max-w-[700px] mx-auto">
-            {words.data && words.data.length > 0 ? (
+            {loading ? (
               <div className="space-y-4">
-                {words.data.flatMap((word) => 
-                  word.definitions?.map((definition, defIndex) => (
-                    <DefinitionCard 
-                      key={definition.id}
-                      definition={definition}
-                      word={word.word}
-                    />
-                  )) || []
-                )}
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-32 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
               </div>
-            ) : (
+            ) : results.length === 0 ? (
               <div className="bruno-card text-center py-12">
                 <div className="text-6xl mb-4">📚</div>
                 <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
-                  {searchParams.q ? 'No words found matching your search' : 'No words available yet'}
+                  {query ? 'No words found matching your search' : 'No words available yet'}
                 </h3>
                 <p className="text-[#8E8B82] mb-6">
-                  {searchParams.q 
+                  {query 
                     ? 'Try searching for different terms or browse our recent additions.'
                     : 'Be the first to add words to the dictionary!'
                   }
                 </p>
-                {!searchParams.q && (
+                {!query && (
                   <Link href="/add">
-                    <Button className="bruno-button">
+                    <button className="bruno-button">
                       Add Your First Word
-                    </Button>
+                    </button>
                   </Link>
                 )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {results.map((result) => (
+                  <DefinitionCard 
+                    key={result.id}
+                    definition={result}
+                    word={result.words.word}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -93,7 +141,7 @@ function DefinitionCard({
   definition, 
   word
 }: { 
-  definition: any
+  definition: SearchResult
   word: string
 }) {
   return (
@@ -109,7 +157,7 @@ function DefinitionCard({
             </Link>
           </h3>
         </div>
-        {/* Moved share button to top right */}
+        {/* Share button in top right */}
         <div className="flex items-center">
           <button 
             className="p-2 rounded-[2px] hover:bg-[#8E8B82] hover:text-white transition-colors"
@@ -127,7 +175,7 @@ function DefinitionCard({
         </p>
         {/* Only show username or Anonymous */}
         <div className="text-sm text-[#8E8B82] mt-2">
-          by {definition.author?.username || 'Anonymous'}, {definition.created_at ? 
+          by {definition.users?.username || 'Anonymous'}, {definition.created_at ? 
             new Date(definition.created_at).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -145,27 +193,14 @@ function DefinitionCard({
         </div>
       )}
 
-      {/* Tags (if any) */}
-      {definition.tags && definition.tags.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {definition.tags.map((tag: string, index: number) => (
-            <span 
-              key={index}
-              className="bruno-badge bruno-badge-tag"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Vote Bar */}
-      <div className="flex items-center pt-4 border-t border-[#8E8B82]/20">
+      {/* Vote Bar and Flag Button */}
+      <div className="flex items-center justify-between pt-4 border-t border-[#8E8B82]/20">
         <VoteButtons 
           definitionId={definition.id}
           initialScore={definition.score || 0}
           initialUserVote={0}
         />
+        <FlagButton definitionId={definition.id} />
       </div>
     </div>
   )

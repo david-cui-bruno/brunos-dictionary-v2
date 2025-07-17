@@ -17,6 +17,7 @@ interface ProfileSetupProps {
 export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [usernameError, setUsernameError] = useState('')
   const [formData, setFormData] = useState({
     username: '',
     gradYear: '',
@@ -37,6 +38,7 @@ export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
     }
 
     setIsSubmitting(true)
+    setUsernameError('')
 
     try {
       const response = await fetch('/api/profile', {
@@ -52,6 +54,11 @@ export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
       const data = await response.json()
 
       if (!response.ok) {
+        if (data.code === 'USERNAME_TAKEN') {
+          setUsernameError(data.error)
+          toast.error(data.error)
+          return
+        }
         throw new Error(data.error || 'Failed to update profile')
       }
 
@@ -66,6 +73,11 @@ export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsernameError('')
+    setFormData({ ...formData, username: e.target.value })
   }
 
   return (
@@ -88,13 +100,18 @@ export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
             id="username"
             type="text"
             value={formData.username}
-            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            onChange={handleUsernameChange}
             placeholder="Choose a username"
             required
             minLength={3}
             maxLength={15}
-            className="w-full px-4 py-3 border border-[#8E8B82] rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent"
+            className={`w-full px-4 py-3 border rounded-[2px] focus:outline-none focus:ring-2 focus:ring-[#4E3629] focus:border-transparent ${
+              usernameError ? 'border-red-500' : 'border-[#8E8B82]'
+            }`}
           />
+          {usernameError && (
+            <p className="mt-1 text-sm text-red-500">{usernameError}</p>
+          )}
         </div>
 
         <div>
