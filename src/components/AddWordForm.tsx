@@ -46,6 +46,8 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
       return
     }
 
+    console.log('Form submission started:', formData)
+
     // Clear previous field errors
     setFieldErrors({ word: '', definition: '', example: '' })
     let hasErrors = false
@@ -84,36 +86,40 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
     setError('')
 
     try {
-      const response = await fetch('/api/words', {
+      const response = await fetch('/api/definitions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           word: formData.word.trim(),
           definition: formData.definition.trim(),
-          example: formData.example.trim() || null // Send null if empty
+          example: formData.example.trim() || null
         })
       })
 
       const data = await response.json()
+      console.log('API Response:', { status: response.status, data })
 
       if (!response.ok) {
-        if (response.status === 409) {
-          throw new Error('This word already exists in the dictionary')
-        }
         throw new Error(data.error || 'Failed to create word')
       }
 
-      toast.success('Word added successfully!')
+      if (data.moderated) {
+        toast.warning('Your definition has been flagged for review. It will be visible after approval.')
+      } else {
+        toast.success('Word and definition added successfully!')
+      }
+      
       setFormData({ word: '', definition: '', example: '' })
       setFieldErrors({ word: '', definition: '', example: '' })
       
       if (onSuccess) {
         onSuccess()
       } else {
-        router.push(`/search?q=${encodeURIComponent(data.word.word)}`)
+        router.push(`/search?q=${encodeURIComponent(formData.word)}`)
       }
 
     } catch (error) {
+      console.error('Submission error:', error)
       setError((error as Error).message)
       toast.error((error as Error).message)
     } finally {

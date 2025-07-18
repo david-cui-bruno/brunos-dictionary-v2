@@ -16,6 +16,7 @@ import { LogOut, Edit3, Trash2, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
 import WordCard from "@/components/WordCard"
 import { supabaseAdmin } from "@/lib/supabase"
+import Image from 'next/image'
 
 interface UserProfile {
   id: string
@@ -225,10 +226,7 @@ export default function ProfilePage() {
           {/* Profile Header */}
           <div className="bruno-card">
             <div className="flex items-start space-x-6">
-              <div className="w-20 h-20 bg-[#4E3629] rounded-full flex items-center justify-center text-white text-2xl font-playfair font-bold">
-                {initials}
-              </div>
-
+              <BearAvatar size="lg" />
               <div className="flex flex-1 justify-between">
                 <div>
                   <h1 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">
@@ -468,6 +466,39 @@ export default function ProfilePage() {
         </div>
       </main>
       <Footer />
+    </div>
+  )
+}
+
+interface BearAvatarProps {
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+}
+
+const sizeMap = {
+  sm: 'w-8 h-8',
+  md: 'w-12 h-12',
+  lg: 'w-20 h-20'
+}
+
+// The bear icon will be slightly smaller than the container
+const bearSizeMap = {
+  sm: 'w-6 h-6',
+  md: 'w-9 h-9',
+  lg: 'w-16 h-16'
+}
+
+export function BearAvatar({ size = 'md', className = '' }: BearAvatarProps) {
+  return (
+    <div className={`relative ${sizeMap[size]} ${className} bg-[#4E3629] rounded-full flex items-center justify-center`}>
+      <div className={`relative ${bearSizeMap[size]}`}>
+        <Image
+          src="/images/brunosdicticon.png"
+          alt="Bruno's Dictionary Bear Avatar"
+          fill
+          className="object-contain"
+        />
+      </div>
     </div>
   )
 }
