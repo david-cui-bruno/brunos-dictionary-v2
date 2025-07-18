@@ -5,11 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { TrendingUp } from 'lucide-react'
 
+interface Definition {
+  id: string
+  score: number | null
+}
+
 interface LeaderboardWord {
   id: string
   word: string
   score: number
   previousRank?: number
+  definitions?: Definition[]
 }
 
 export default function LiveLeaderboard() {
@@ -52,7 +58,7 @@ export default function LiveLeaderboard() {
             return {
               ...word,
               score: newScore,
-              previousRank: word.rank
+              previousRank: word.previousRank // Use previousRank instead of rank
             }
           }
           return word

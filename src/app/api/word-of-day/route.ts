@@ -53,7 +53,13 @@ export async function GET(request: NextRequest) {
           author_id,
           created_at,
           updated_at,
-          word_id
+          word_id,
+          admin_notes,
+          ai_moderation_categories,
+          ai_moderation_flagged_at,
+          ai_moderation_score,
+          reviewed_at,
+          reviewed_by
         )
       `)
       .eq('definitions.status', 'clean')

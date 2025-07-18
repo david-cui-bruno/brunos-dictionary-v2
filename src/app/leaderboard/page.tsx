@@ -9,12 +9,12 @@ interface User {
 }
 
 interface Vote {
-  value: number
+  value: number | null
   user_id: string
 }
 
 interface Definition {
-  author_id: string
+  author_id: string | null
   votes: Vote[]
 }
 
@@ -66,20 +66,22 @@ async function getLeaderboard() {
   votesReceived.forEach((def: Definition) => {
     const authorId = def.author_id
     
-    def.votes?.forEach((vote: Vote) => {
-      const voterId = vote.user_id
-      
-      if (vote.value > 0) {
-        if (voterId === authorId) {
-          // Self-vote: count only once as a vote given
-          karmaMap[voterId] = (karmaMap[voterId] || 0) + 1
-        } else {
-          // Vote from another user: count once for receiver and once for giver
-          karmaMap[authorId] = (karmaMap[authorId] || 0) + 1  // point for receiving
-          karmaMap[voterId] = (karmaMap[voterId] || 0) + 1    // point for giving
+    if (authorId) { // Add null check for author_id
+      def.votes?.forEach((vote: Vote) => {
+        const voterId = vote.user_id
+        
+        if (vote.value && vote.value > 0) {
+          if (voterId === authorId) {
+            // Self-vote: count only once as a vote given
+            karmaMap[voterId] = (karmaMap[voterId] || 0) + 1
+          } else {
+            // Vote from another user: count once for receiver and once for giver
+            karmaMap[authorId] = (karmaMap[authorId] || 0) + 1  // point for receiving
+            karmaMap[voterId] = (karmaMap[voterId] || 0) + 1    // point for giving
+          }
         }
-      }
-    })
+      })
+    }
   })
 
   // Get user details for top users

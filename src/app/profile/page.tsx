@@ -17,6 +17,7 @@ import Link from "next/link"
 import WordCard from "@/components/WordCard"
 import { supabaseAdmin } from "@/lib/supabase"
 import Image from 'next/image'
+import { BearAvatar } from "@/components/ui/bear-avatar"
 
 interface UserProfile {
   id: string
@@ -466,39 +467,6 @@ export default function ProfilePage() {
         </div>
       </main>
       <Footer />
-    </div>
-  )
-}
-
-interface BearAvatarProps {
-  size?: 'sm' | 'md' | 'lg'
-  className?: string
-}
-
-const sizeMap = {
-  sm: 'w-8 h-8',
-  md: 'w-12 h-12',
-  lg: 'w-20 h-20'
-}
-
-// The bear icon will be slightly smaller than the container
-const bearSizeMap = {
-  sm: 'w-6 h-6',
-  md: 'w-9 h-9',
-  lg: 'w-16 h-16'
-}
-
-export function BearAvatar({ size = 'md', className = '' }: BearAvatarProps) {
-  return (
-    <div className={`relative ${sizeMap[size]} ${className} bg-[#4E3629] rounded-full flex items-center justify-center`}>
-      <div className={`relative ${bearSizeMap[size]}`}>
-        <Image
-          src="/images/brunosdicticon.png"
-          alt="Bruno's Dictionary Bear Avatar"
-          fill
-          className="object-contain"
-        />
-      </div>
     </div>
   )
 }

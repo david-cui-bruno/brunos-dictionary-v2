@@ -21,8 +21,8 @@ const bearSizeMap = {
 
 const marginMap = {
   sm: '-mt-0.5',
-  md: '-mt-0.5',
-  lg: '-mt-1'
+  md: '-mt-1',
+  lg: '-mt-2'
 }
 
 export function BearAvatar({ size = 'md', className = '' }: BearAvatarProps) {

@@ -78,10 +78,10 @@ export async function getWordOfDay(options?: FetchOptions) {
     // Get only clean definitions and sort by score
     const cleanDefinitions = existingWord.words.definitions
       ?.filter((def: { 
-  status: "clean" | "flagged" | "removed" | null;
-  score: number | null;
-}) => def.status === 'clean')
-.sort((a: { score: number | null }, b: { score: number | null }) => (b.score || 0) - (a.score || 0)) || []
+        status: "clean" | "flagged" | "removed" | "pending_review" | "ai_flagged" | null;
+        score: number | null;
+      }) => def.status === 'clean')
+      .sort((a: { score: number | null }, b: { score: number | null }) => (b.score || 0) - (a.score || 0)) || []
 
     existingWord.words.definitions = cleanDefinitions.slice(0, 1)
     return { data: existingWord, error: null }
@@ -103,9 +103,9 @@ export async function getWordOfDay(options?: FetchOptions) {
     if (result.data?.words?.definitions) {
       const cleanDefinitions = result.data.words.definitions
         .filter((def: { 
-  status: "clean" | "flagged" | "removed" | null;
-  score: number | null;
-}) => def.status === 'clean')
+          status: "clean" | "flagged" | "removed" | "pending_review" | "ai_flagged" | null;
+          score: number | null;
+        }) => def.status === 'clean')
         .sort((a: { score: number | null }, b: { score: number | null }) => (b.score || 0) - (a.score || 0))
       
       result.data.words.definitions = cleanDefinitions.slice(0, 1)

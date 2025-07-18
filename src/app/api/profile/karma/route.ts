@@ -4,12 +4,12 @@ import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 
 interface Vote {
-  value: number
+  value: number | null
   user_id: string
 }
 
 interface Definition {
-  author_id: string
+  author_id: string | null
   votes: Vote[]
 }
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       def.votes?.forEach((vote: Vote) => {
         const voterId = vote.user_id
         
-        if (vote.value > 0) {
+        if (vote.value && vote.value > 0) {
           if (voterId === userId) {
             // Self-vote: count only once as a vote given
             karma += 1
