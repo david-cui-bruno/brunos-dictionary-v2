@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -21,11 +21,11 @@ interface SearchResult {
     slug: string
   }
   users: {
-    username: string  // Changed from name to username
+    username: string
   }
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
   const [results, setResults] = useState<SearchResult[]>([])
@@ -203,5 +203,38 @@ function DefinitionCard({
         <FlagButton definitionId={definition.id} />
       </div>
     </div>
+  )
+}
+
+// Loading component
+function SearchPageLoading() {
+  return (
+    <div className="min-h-screen bg-[#FAF7F3]">
+      <Navigation />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-4">
+            <div className="h-12 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-64 mx-auto"></div>
+          </div>
+          <div className="max-w-[700px] mx-auto space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="h-32 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageLoading />}>
+      <SearchPageContent />
+    </Suspense>
   )
 }

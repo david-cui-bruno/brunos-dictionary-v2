@@ -2,12 +2,13 @@
 
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
-export default function SignInPage() {
+function SignInPageContent() {
   const searchParams = useSearchParams()
   
   const handleGoogleSignIn = async () => {
@@ -67,5 +68,28 @@ export default function SignInPage() {
 
       <Footer />
     </div>
+  )
+}
+
+// Loading component
+function SignInPageLoading() {
+  return (
+    <div className="min-h-screen bg-paper-white">
+      <Navigation />
+      <main className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="animate-pulse">
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<SignInPageLoading />}>
+      <SignInPageContent />
+    </Suspense>
   )
 } 
