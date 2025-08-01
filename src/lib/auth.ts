@@ -54,9 +54,21 @@ export const authOptions: NextAuthOptions = {
         return false
       }
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id
+        // Get the user ID from our database using netid
+        const netid = user.email?.replace('@brown.edu', '')
+        if (netid) {
+          const { data: dbUser } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('netid', netid)
+            .single()
+          
+          if (dbUser) {
+            token.id = dbUser.id
+          }
+        }
       }
       return token
     },
