@@ -70,14 +70,6 @@ export async function moderateContent(text: string): Promise<ModerationResult> {
     status = 'ai_flagged';
   }
 
-  console.log('Moderation Results:', {
-    text,
-    maxScore,
-    status,
-    allScores: result.category_scores,
-    thresholds: THRESHOLDS
-  });
-  
   return {
     flagged: status !== 'clean',
     categories: result.categories,

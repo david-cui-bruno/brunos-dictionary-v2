@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     await requireAdmin()
 
-    // Get flagged definitions that are in the moderation queue
+    // Single query with joins - no more N+1!
     const { data: queueItems, error } = await supabaseAdmin
       .from('moderation_queue')
       .select(`
@@ -29,6 +29,13 @@ export async function GET(request: NextRequest) {
           users!definitions_author_id_fkey (
             username
           )
+        ),
+        flags:flags (
+          reason,
+          created_at,
+          users!flags_flagger_id_fkey (
+            username
+          )
         )
       `)
       .eq('status', 'pending')
@@ -38,29 +45,11 @@ export async function GET(request: NextRequest) {
       throw error
     }
 
-    // Get flags for each definition separately
-    const itemsWithFlags = await Promise.all(
-      (queueItems || []).map(async (item) => {
-        if (!item.definition_id) return item;
-
-        // Get flags for this definition
-        const { data: flags } = await supabaseAdmin
-          .from('flags')
-          .select(`
-            reason,
-            created_at,
-            users!flags_flagger_id_fkey (
-              username
-            )
-          `)
-          .eq('definition_id', item.definition_id)
-
-        return {
+    // Transform the data to match expected format
+    const itemsWithFlags = (queueItems || []).map((item) => ({
           ...item,
-          flags: flags || []
-        };
-      })
-    );
+      flags: item.flags || []
+    }))
 
     return NextResponse.json({ items: itemsWithFlags })
 

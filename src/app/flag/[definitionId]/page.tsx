@@ -72,24 +72,15 @@ export default function FlagFormPage({ params }: { params: { definitionId: strin
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('🚀 Flag form submitted')
-    console.log('📝 Form data:', {
-      definitionId: params.definitionId,
-      selectedReason,
-      additionalComments
-    })
     
     if (!selectedReason) {
-      console.log('❌ No reason selected')
       toast.error('Please select a reason for reporting')
       return
     }
 
     setSubmitting(true)
-    console.log('⏳ Starting submission...')
 
     try {
-      console.log('📡 Sending POST request to /api/flag')
       const response = await fetch('/api/flag', {
         method: 'POST',
         headers: {
@@ -102,24 +93,18 @@ export default function FlagFormPage({ params }: { params: { definitionId: strin
         })
       })
 
-      console.log(' Response status:', response.status)
-      console.log('📨 Response ok:', response.ok)
-
       if (response.ok) {
         const responseData = await response.json()
-        console.log('✅ Success response:', responseData)
         toast.success('Report submitted successfully')
         router.push('/flag/success')
       } else {
         const data = await response.json()
-        console.log('❌ Error response:', data)
         toast.error(data.error || 'Failed to submit report')
       }
     } catch (error) {
-      console.error('💥 Exception during submission:', error)
+      console.error('Flag submission error:', error)
       toast.error('Failed to submit report')
     } finally {
-      console.log('🏁 Submission finished')
       setSubmitting(false)
     }
   }

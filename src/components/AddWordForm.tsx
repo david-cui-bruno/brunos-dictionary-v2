@@ -46,8 +46,6 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
       return
     }
 
-    console.log('Form submission started:', formData)
-
     // Clear previous field errors
     setFieldErrors({ word: '', definition: '', example: '' })
     let hasErrors = false
@@ -97,7 +95,6 @@ export default function AddWordForm({ onSuccess }: AddWordFormProps) {
       })
 
       const data = await response.json()
-      console.log('API Response:', { status: response.status, data })
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to create word')
