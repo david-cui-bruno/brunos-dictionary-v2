@@ -76,12 +76,21 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
     )
   }
 
-  // Determine font size based on word length
+  // Determine font size based on word length - make all sizes bigger
   const getWordFontSize = (wordText: string) => {
-    if (wordText.length <= 15) return 'text-5xl'
-    if (wordText.length <= 25) return 'text-4xl'
-    if (wordText.length <= 35) return 'text-3xl'
-    return 'text-2xl'
+    if (wordText.length <= 15) return 'text-5xl'  // was text-4xl
+    if (wordText.length <= 25) return 'text-4xl'  // was text-3xl
+    if (wordText.length <= 35) return 'text-3xl'  // was text-2xl
+    return 'text-2xl'  // was text-xl
+  }
+
+  // Determine definition font size based on word count - make it larger
+  const getDefinitionFontSize = (definitionText: string) => {
+    const wordCount = definitionText.split(' ').length
+    if (wordCount <= 10) return 'text-lg'  // was text-base
+    if (wordCount <= 20) return 'text-base' // was text-sm
+    if (wordCount <= 30) return 'text-sm'   // was text-xs
+    return 'text-sm' // was text-xs
   }
 
   // Truncate long text
@@ -106,13 +115,13 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
         
         {/* Definition container - adjust left/right padding (px-6) */}
         <div className="w-full px-6">
-          {/* Definition text - truncate if too long */}
-          <p className="text-[#4E3629] text-lg mb-4 leading-relaxed text-center line-clamp-3">
+          {/* Definition text - dynamic font size based on word count */}
+          <p className={`text-[#4E3629] ${getDefinitionFontSize(word.words.definitions[0]?.body ?? "")} mb-4 leading-relaxed text-center line-clamp-3`}>
             {truncateText(word.words.definitions[0]?.body ?? "No definition available", 200)}
           </p>
           {word.words.definitions[0]?.example && (
-            // Example text - truncate if too long
-            <p className="text-[#8E8B82] italic text-center text-lg line-clamp-2">
+            // Example text - also make dynamic based on word count
+            <p className={`text-[#8E8B82] italic text-center ${getDefinitionFontSize(word.words.definitions[0].example)} line-clamp-2`}>
               "{truncateText(word.words.definitions[0].example, 150)}"
             </p>
           )}
