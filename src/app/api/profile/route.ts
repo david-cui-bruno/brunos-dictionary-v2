@@ -22,8 +22,10 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Username must be 3-15 characters' }, { status: 400 })
     }
 
-    if (gradYear < 1900 || gradYear > 2100) {
-      return NextResponse.json({ error: 'Invalid graduation year' }, { status: 400 })
+    // Fix graduation year validation: 1950 to current year + 4
+    const currentYear = new Date().getFullYear()
+    if (gradYear < 1950 || gradYear > currentYear + 4) {
+      return NextResponse.json({ error: `Graduation year must be between 1950 and ${currentYear + 4}` }, { status: 400 })
     }
 
     // Check if username is already taken by another user

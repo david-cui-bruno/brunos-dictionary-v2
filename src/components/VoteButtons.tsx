@@ -80,6 +80,7 @@ export default function VoteButtons({
             action
           }
         }))
+        console.log('VoteButtons dispatched voteUpdate event:', { definitionId, newScore, action })
       } else {
         console.error('Vote failed:', data.error)
       }

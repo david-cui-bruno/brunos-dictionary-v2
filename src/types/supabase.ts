@@ -409,7 +409,7 @@ export type Database = {
         Returns: unknown
       }
       calculate_user_karma: {
-        Args: { user_id: string }
+        Args: { input_user_id: string }
         Returns: number
       }
       get_trending_searches: {

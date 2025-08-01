@@ -12,9 +12,9 @@ interface YearSelectorProps {
   className?: string
 }
 
-// Generate years from current year + 4 down to 2000 (descending order)
-const CURRENT_YEAR = 2025
-const YEARS = Array.from({ length: CURRENT_YEAR + 4 - 2000 + 1 }, (_, i) => 
+// Generate years from current year + 4 down to 1950 (descending order)
+const CURRENT_YEAR = new Date().getFullYear()
+const YEARS = Array.from({ length: CURRENT_YEAR + 4 - 1950 + 1 }, (_, i) => 
   (CURRENT_YEAR + 4 - i).toString()
 )
 

@@ -9,7 +9,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     })
   ],
-  debug: true, // Add this line temporarily
+  // Remove this line for production
+  // debug: true,
   callbacks: {
     async signIn({ user, account, profile }) {
       try {

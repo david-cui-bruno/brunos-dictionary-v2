@@ -36,7 +36,13 @@ export async function GET(request: NextRequest) {
     }).sort((a, b) => b.score - a.score) || [];
 
     // Return empty array if no words (instead of error)
-    return NextResponse.json({ words: processedWords })
+    return NextResponse.json({ words: processedWords }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   } catch (error) {
     console.error('Leaderboard error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

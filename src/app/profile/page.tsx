@@ -78,6 +78,19 @@ export default function ProfilePage() {
     }
   }, [session])
 
+  // Add this effect to refresh karma when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && session?.user?.id) {
+        // Refresh karma when user returns to the page
+        fetchUserData()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [session?.user?.id])
+
   useEffect(() => {
     // Update form fields when profile data loads
     if (userProfile) {

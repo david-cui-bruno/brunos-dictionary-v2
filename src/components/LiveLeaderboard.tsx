@@ -24,7 +24,14 @@ export default function LiveLeaderboard() {
 
   const fetchLeaderboard = useCallback(async () => {
     try {
-      const response = await fetch('/api/leaderboard')
+      const response = await fetch('/api/leaderboard', {
+        // Add cache busting - same pattern as src/app/page.tsx
+        cache: 'no-store' as RequestCache,
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       const data = await response.json()
       
       if (response.ok) {
@@ -40,8 +47,8 @@ export default function LiveLeaderboard() {
   useEffect(() => {
     fetchLeaderboard()
     
-    // Set up real-time updates with longer interval to reduce re-renders
-    const interval = setInterval(fetchLeaderboard, 10000) // Poll every 10 seconds instead of 5
+    // Change from 10000 to 3000 (3 seconds instead of 10)
+    const interval = setInterval(fetchLeaderboard, 3000)
     
     return () => clearInterval(interval)
   }, [fetchLeaderboard])
@@ -49,6 +56,7 @@ export default function LiveLeaderboard() {
   // Handle real-time vote updates - only update if the word is actually in the top 3
   useEffect(() => {
     const handleVoteUpdate = (event: CustomEvent) => {
+      console.log('LiveLeaderboard received voteUpdate event:', event.detail) // Add this
       const { definitionId, newScore } = event.detail
       
       setWords(prevWords => {

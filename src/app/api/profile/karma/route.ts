@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
 
     const userId = session.user.id
 
-    // Single query to get all karma components
+    // Update the function call to use the new parameter name
     const { data, error } = await supabaseAdmin
-      .rpc('calculate_user_karma', { user_id: userId })
+      .rpc('calculate_user_karma', { input_user_id: userId })
 
     if (error) {
       console.error('Karma calculation error:', error)
