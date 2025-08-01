@@ -104,6 +104,18 @@ export default function LiveLeaderboard() {
     )
   }
 
+  if (words.length === 0) {
+    return (
+      <div className="bruno-card max-w-md mx-auto h-[284px] flex flex-col justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📝</div>
+          <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">No words yet</h3>
+          <p className="text-[#8E8B82]">Be the first to add words!</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="bruno-card max-w-md mx-auto h-[284px] flex flex-col justify-center">
       <AnimatePresence mode="popLayout">

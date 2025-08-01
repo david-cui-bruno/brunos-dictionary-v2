@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
       };
     }).sort((a, b) => b.score - a.score) || [];
 
+    // Return empty array if no words (instead of error)
     return NextResponse.json({ words: processedWords })
   } catch (error) {
     console.error('Leaderboard error:', error)
