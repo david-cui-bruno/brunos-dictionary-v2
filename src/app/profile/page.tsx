@@ -239,36 +239,33 @@ export default function ProfilePage() {
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Profile Header */}
           <div className="bruno-card">
-            <div className="flex items-start space-x-6">
+            <div className="flex flex-col sm:flex-row items-start sm:space-x-6 space-y-4 sm:space-y-0">
               <BearAvatar size="lg" />
-              <div className="flex flex-1 justify-between">
-                <div>
-                  <h1 className="text-3xl font-playfair font-bold text-[#4E3629] mb-2">
+              <div className="flex flex-col sm:flex-row flex-1 w-full justify-between">
+                <div className="flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-playfair font-bold text-[#4E3629] mb-2">
                     {userProfile?.username || userProfile?.name}
                   </h1>
                   <p className="text-[#8E8B82] text-sm mb-4">
                     Class of {userProfile?.grad_year} • {concentrations.join(', ')}
                   </p>
                 </div>
-
-                <div className="flex gap-6">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-end gap-2">
-                      <div className="text-2xl font-bold text-[#4E3629] w-8 text-right">{myWords.length}</div>
-                      <div className="text-sm text-[#4E3629]">words submitted</div>
-                    </div>
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href="/leaderboard">
-                        <div className={`text-2xl font-bold w-8 text-right hover:opacity-80 transition-opacity cursor-pointer ${
-                          karma > 0 ? 'text-[#4C6B46]' : 
-                          karma < 0 ? 'text-[#B04A39]' : 
-                          'text-[#4E3629]'
-                        }`}>
-                          {karma}
-                        </div>
-                      </Link>
-                      <div className="text-sm text-[#4E3629]">total karma</div>
-                    </div>
+                <div className="flex flex-row sm:flex-col gap-4 sm:gap-2 mt-2 sm:mt-0">
+                  <div className="flex items-center gap-2">
+                    <div className="text-xl sm:text-2xl font-bold text-[#4E3629] w-8 text-right">{myWords.length}</div>
+                    <div className="text-sm text-[#4E3629]">words</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link href="/leaderboard">
+                      <div className={`text-xl sm:text-2xl font-bold w-8 text-right hover:opacity-80 transition-opacity cursor-pointer ${
+                        karma > 0 ? 'text-[#4C6B46]' : 
+                        karma < 0 ? 'text-[#B04A39]' : 
+                        'text-[#4E3629]'
+                      }`}>
+                        {karma}
+                      </div>
+                    </Link>
+                    <div className="text-sm text-[#4E3629]">karma</div>
                   </div>
                 </div>
               </div>
@@ -276,7 +273,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex space-x-1 bg-[#8E8B82] p-1 rounded-[2px]">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-1 bg-[#8E8B82] p-1 rounded-[2px]">
             <button
               onClick={() => setActiveTab("words")}
               className={`flex-1 py-2 px-4 rounded-[2px] font-medium transition-colors ${
@@ -312,6 +309,7 @@ export default function ProfilePage() {
                         slug={word.slug}
                         definitionId={word.definitions?.[0]?.id}
                         score={word.definitions?.[0]?.score || 0}
+                        userVote={0}  // Add this - VoteButtons will fetch actual state
                       />
                     ))}
                   </div>
@@ -352,7 +350,7 @@ export default function ProfilePage() {
           )}
 
           {activeTab === "settings" && (
-            <div className="space-y-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-playfair font-bold text-[#4E3629]">Account Settings</h2>
                 <button
@@ -363,9 +361,8 @@ export default function ProfilePage() {
                   <span>{isEditing ? "Cancel" : "Edit"}</span>
                 </button>
               </div>
-
               <div className="bruno-card space-y-6">
-                <div>
+                <div className="w-full">
                   <label className="block text-sm font-medium text-[#4E3629] mb-2">Full Name</label>
                   {isEditing ? (
                     <Input
@@ -379,7 +376,7 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                <div>
+                <div className="w-full">
                   <label className="block text-sm font-medium text-[#4E3629] mb-2">Graduation Year</label>
                   {isEditing ? (
                     <YearSelector
@@ -392,13 +389,14 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                <div>
+                <div className="w-full">
                   <label className="block text-sm font-medium text-[#4E3629] mb-2">Concentration</label>
                   {isEditing ? (
                     <ConcentrationSelector
                       value={concentrations}
                       onChange={setConcentrations}
                       placeholder="Add concentration(s)"
+                      className="w-full"
                     />
                   ) : (
                     <p className="text-[#8E8B82]">

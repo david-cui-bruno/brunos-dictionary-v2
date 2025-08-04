@@ -213,7 +213,7 @@ export default function ConcentrationSelector({
                 e.stopPropagation()
                 handleRemove(index)
               }}
-              className="ml-1 hover:bg-brown-dark rounded-full p-0.5 flex items-center justify-center"
+              className="ml-1 hover:bg-brown-dark rounded-full p-1 flex items-center justify-center min-h-[24px] min-w-[24px]"
               aria-label={`Remove ${concentration}`}
             >
               <X size={12} />

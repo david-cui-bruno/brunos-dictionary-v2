@@ -6,14 +6,13 @@ import { supabaseAdmin } from '@/lib/supabase'
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('user_id') || session?.user?.id
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = session.user.id
-
-    // Update the function call to use the new parameter name
     const { data, error } = await supabaseAdmin
       .rpc('calculate_user_karma', { input_user_id: userId })
 

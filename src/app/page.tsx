@@ -118,7 +118,6 @@ export default async function HomePage({ searchParams }: Props) {
 
             {/* Popular Words Leaderboard */}
             <section>
-              {/* Reduced margin from mb-4 to mb-2 */}
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-1">Top Words</h2>
               </div>

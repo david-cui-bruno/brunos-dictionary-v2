@@ -107,14 +107,14 @@ export default function VoteButtons({
       <button
         onClick={() => handleVote('up')}
         disabled={isVoting}
-        className={`p-1 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`p-2 sm:p-1 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[36px] min-w-[36px] flex items-center justify-center ${
           userVote === 1 
             ? 'bg-[#317a22] text-white' 
             : 'text-[#8E8B82] hover:bg-[#317a22] hover:text-white'
         }`}
         aria-label="Vote up"
       >
-        <ChevronUp size={16} />
+        <ChevronUp size={18} className="sm:w-4 sm:h-4" />
       </button>
       
       <span className={`text-sm font-medium ${
@@ -127,14 +127,14 @@ export default function VoteButtons({
       <button
         onClick={() => handleVote('down')}
         disabled={isVoting}
-        className={`p-1 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`p-2 sm:p-1 rounded-[2px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[36px] min-w-[36px] flex items-center justify-center ${
           userVote === -1 
             ? 'bg-[#ad4545] text-white' 
             : 'text-[#8E8B82] hover:bg-[#ad4545] hover:text-white'
         }`}
         aria-label="Vote down"
       >
-        <ChevronDown size={16} />
+        <ChevronDown size={18} className="sm:w-4 sm:h-4" />
       </button>
     </div>
   )

@@ -7,6 +7,11 @@ import AdminWrapper from '@/components/AdminWrapper'
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata: Metadata = {
   title: "Bruno's Dictionary",
   description: "Brown University's student-run slang dictionary",

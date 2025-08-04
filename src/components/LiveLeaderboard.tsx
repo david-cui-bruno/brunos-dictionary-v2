@@ -20,12 +20,10 @@ interface LeaderboardWord {
 
 export default function LiveLeaderboard() {
   const [words, setWords] = useState<LeaderboardWord[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
   const fetchLeaderboard = useCallback(async () => {
     try {
       const response = await fetch('/api/leaderboard', {
-        // Add cache busting - same pattern as src/app/page.tsx
         cache: 'no-store' as RequestCache,
         headers: {
           'Cache-Control': 'no-cache',
@@ -39,40 +37,34 @@ export default function LiveLeaderboard() {
       }
     } catch (error) {
       console.error('Error fetching leaderboard:', error)
-    } finally {
-      setIsLoading(false)
     }
   }, [])
 
   useEffect(() => {
     fetchLeaderboard()
     
-    // Change from 10000 to 3000 (3 seconds instead of 10)
     const interval = setInterval(fetchLeaderboard, 3000)
     
     return () => clearInterval(interval)
   }, [fetchLeaderboard])
 
-  // Handle real-time vote updates - only update if the word is actually in the top 3
+  // Handle real-time vote updates
   useEffect(() => {
     const handleVoteUpdate = (event: CustomEvent) => {
-      console.log('LiveLeaderboard received voteUpdate event:', event.detail) // Add this
       const { definitionId, newScore } = event.detail
       
       setWords(prevWords => {
         const updatedWords = prevWords.map(word => {
-          // Find if this word has the definition that was voted on
           if (word.definitions?.some(def => def.id === definitionId)) {
             return {
               ...word,
               score: newScore,
-              previousRank: word.previousRank // Use previousRank instead of rank
+              previousRank: word.previousRank
             }
           }
           return word
         }).sort((a, b) => b.score - a.score)
         
-        // Only update if the word is still in top 3
         return updatedWords.slice(0, 3)
       })
     }
@@ -94,91 +86,86 @@ export default function LiveLeaderboard() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="bruno-card max-w-md mx-auto h-[284px] flex flex-col justify-center">
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center justify-between p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82] animate-pulse">
-              <div className="flex items-center space-x-4">
-                <span className="text-lg font-bold w-8 text-center">#{i}</span>
-                <div className="h-4 bg-gray-200 rounded w-24"></div>
-              </div>
-              <div className="h-4 bg-gray-200 rounded w-8"></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
   if (words.length === 0) {
     return (
-      <div className="bruno-card max-w-md mx-auto h-[284px] flex flex-col justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">📝</div>
-          <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">No words yet</h3>
-          <p className="text-[#8E8B82]">Be the first to add words!</p>
+      <div className="bruno-card h-full">
+        <div className="flex flex-col items-center justify-between h-full py-8">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">No words yet</h3>
+            <p className="text-[#8E8B82]">Be the first to add words!</p>
+          </div>
+          <div className="w-full px-6">
+            {/* Empty space to match WordOfDay layout */}
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bruno-card max-w-md mx-auto h-[284px] flex flex-col justify-center">
-      <AnimatePresence mode="popLayout">
-        <div className="space-y-4">
-          {words.slice(0, 3).map((word, index) => (
-            <motion.div
-              key={word.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 40,
-                mass: 1.2,
-                duration: 0.8
-              }}
-              className="flex items-center justify-between p-4 bg-[#FAF7F3] rounded-md border border-[#8E8B82]"
-            >
-              <div className="flex items-center space-x-4">
-                <motion.span
-                  layout
-                  className="text-lg font-bold w-8 text-center"
-                >
-                  {getRankIcon(index)}
-                </motion.span>
-                <div>
-                  <Link 
-                    href={`/search?q=${encodeURIComponent(word.word)}`}
-                    className="hover:text-[#4E3629]/80 transition-colors"
-                  >
-                    <motion.h3 
-                      layout
-                      className="text-lg font-playfair font-semibold text-[#4E3629] cursor-pointer"
-                    >
-                      {word.word}
-                    </motion.h3>
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 text-[#8E8B82]">
-                <TrendingUp className="h-4 w-4" />
-                <motion.span 
-                  layout
-                  className="text-sm font-medium"
-                  key={word.score} // Force re-render when score changes
-                >
-                  {word.score}
-                </motion.span>
-              </div>
-            </motion.div>
-          ))}
+    <div className="bruno-card h-full">
+      <div className="flex flex-col items-center justify-between h-full py-4">
+        <div className="text-center">
+          {/* Empty space to match WordOfDay title height */}
         </div>
-      </AnimatePresence>
+        
+        <div className="w-full px-6">
+          <AnimatePresence mode="popLayout">
+            <div className="space-y-4">
+              {words.slice(0, 3).map((word, index) => (
+                <motion.div
+                  key={word.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 40,
+                    mass: 1.2,
+                    duration: 0.8
+                  }}
+                  className="flex items-center justify-between p-4 bg-[#FAF7F3] rounded-[2px] border border-[#8E8B82]"
+                >
+                  <div className="flex items-center space-x-4">
+                    <motion.span
+                      layout
+                      className="text-lg font-bold w-8 text-center"
+                    >
+                      {getRankIcon(index)}
+                    </motion.span>
+                    <div>
+                      <Link 
+                        href={`/search?q=${encodeURIComponent(word.word)}`}
+                        className="hover:text-[#4E3629]/80 transition-colors"
+                      >
+                        <motion.h3 
+                          layout
+                          className="text-lg font-playfair font-semibold text-[#4E3629] cursor-pointer"
+                        >
+                          {word.word}
+                        </motion.h3>
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 text-[#8E8B82]">
+                    <TrendingUp className="h-4 w-4" />
+                    <motion.span 
+                      layout
+                      className="text-sm font-medium"
+                      key={word.score}
+                    >
+                      {word.score}
+                    </motion.span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   )
 } 

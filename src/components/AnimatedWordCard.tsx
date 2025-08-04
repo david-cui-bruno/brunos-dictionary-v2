@@ -19,7 +19,7 @@ export default function AnimatedWordCard({ word, definition, example, slug, defi
   const ref = useRef(null)
   const isInView = useInView(ref, {
     once: true,
-    amount: 0.5, // Small amount to trigger at bottom of viewport
+    amount: 0.5,
     margin: "0px 0px 0px 0px"
   })
   
@@ -33,7 +33,7 @@ export default function AnimatedWordCard({ word, definition, example, slug, defi
       animate={isInView ? { x: 0, opacity: 1 } : { x: xOffset, opacity: 0 }}
       transition={{
         duration: 0.5,
-        delay: index * 0.2, // Sequential delay based on index within the row
+        delay: index * 0.2,
         ease: "easeOut"
       }}
     >
@@ -44,6 +44,7 @@ export default function AnimatedWordCard({ word, definition, example, slug, defi
         slug={slug}
         definitionId={definitionId}
         score={score}
+        userVote={0}
       />
     </motion.div>
   )

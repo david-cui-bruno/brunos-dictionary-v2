@@ -23,11 +23,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/search" className="text-[#FAF7F3]/80 hover:text-white transition-colors">
-                  Search
-                </Link>
-              </li>
-              <li>
                 <Link href="/add" className="text-[#FAF7F3]/80 hover:text-white transition-colors">
                   Add Word
                 </Link>
@@ -50,7 +45,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="mailto:contact@example.com" className="text-[#FAF7F3]/80 hover:text-white transition-colors">
+                <a href="mailto:david_cui@brown.edu" className="text-[#FAF7F3]/80 hover:text-white transition-colors">
                   Contact Us
                 </a>
               </li>

@@ -1,6 +1,8 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import { supabaseAdmin } from '@/lib/supabase'
 
 interface User {
   id: string
@@ -8,50 +10,77 @@ interface User {
   karma: number
 }
 
-async function getLeaderboard() {
-  // Get all users with their karma calculated by the database function
-  const { data: users, error: usersError } = await supabaseAdmin
-    .from('users')
-    .select('id, username')
+export default function LeaderboardPage() {
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  if (usersError) {
-    console.error('Users fetch error:', usersError)
-    throw usersError
-  }
-
-  // Calculate karma for each user using the database function
-  const leaderboard: User[] = []
-  
-  for (const user of users) {
+  const fetchLeaderboard = async () => {
     try {
-      const { data: karma, error: karmaError } = await supabaseAdmin
-        .rpc('calculate_user_karma', { input_user_id: user.id })
+      // Get all users
+      const usersResponse = await fetch('/api/users')
+      const usersData = await usersResponse.json()
       
-      if (karmaError) {
-        console.error(`Karma calculation error for user ${user.id}:`, karmaError)
-        continue
-      }
+      if (!usersResponse.ok) throw new Error('Failed to fetch users')
       
-      // Only include users with karma > 0
-      if (karma && karma > 0) {
-        leaderboard.push({
-          id: user.id,
-          username: user.username || 'Anonymous',
-          karma: karma
-        })
+      // Calculate karma for each user
+      const leaderboard: User[] = []
+      
+      for (const user of usersData.users) {
+        try {
+          const karmaResponse = await fetch(`/api/profile/karma?user_id=${user.id}`)
+          const karmaData = await karmaResponse.json()
+          
+          if (karmaResponse.ok && karmaData.karma > 0) {
+            leaderboard.push({
+              id: user.id,
+              username: user.username || 'Anonymous',
+              karma: karmaData.karma
+            })
+          }
+        } catch (error) {
+          console.error(`Error calculating karma for user ${user.id}:`, error)
+        }
       }
+
+      // Sort by karma (descending)
+      setUsers(leaderboard.sort((a, b) => b.karma - a.karma))
     } catch (error) {
-      console.error(`Error calculating karma for user ${user.id}:`, error)
-      continue
+      console.error('Error fetching leaderboard:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  // Sort by karma (descending)
-  return leaderboard.sort((a, b) => b.karma - a.karma)
-}
+  useEffect(() => {
+    fetchLeaderboard()
+    
+    // Poll for updates every 10 seconds
+    const interval = setInterval(fetchLeaderboard, 10000)
+    return () => clearInterval(interval)
+  }, [])
 
-export default async function LeaderboardPage() {
-  const users = await getLeaderboard()
+  // Listen for vote updates
+  useEffect(() => {
+    const handleVoteUpdate = () => {
+      // Refresh leaderboard when votes change
+      fetchLeaderboard()
+    }
+
+    window.addEventListener('voteUpdate', handleVoteUpdate)
+    return () => window.removeEventListener('voteUpdate', handleVoteUpdate)
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FAF7F3]">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading...</div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF7F3]">

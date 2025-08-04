@@ -43,7 +43,7 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
 
   if (loading) {
     return (
-      <div className="bruno-card text-center py-12 max-w-md mx-auto">
+      <div className="bruno-card text-center py-12">
         <div className="text-6xl mb-4">⏳</div>
         <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
           Loading word of the day...
@@ -54,7 +54,7 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
 
   if (error) {
     return (
-      <div className="bruno-card text-center py-12 max-w-md mx-auto">
+      <div className="bruno-card text-center py-12">
         <div className="text-6xl mb-4">❌</div>
         <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
           Error loading word of the day
@@ -66,7 +66,7 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
 
   if (!word?.words || !word.words.definitions || word.words.definitions.length === 0) {
     return (
-      <div className="bruno-card text-center py-12 max-w-md mx-auto">
+      <div className="bruno-card text-center py-12">
         <div className="text-6xl mb-4">📚</div>
         <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
           No word of the day available
@@ -100,7 +100,7 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
   }
 
   return (
-    <div className="bruno-card max-w-md mx-auto h-[284px]">
+    <div className="bruno-card h-full">
       {/* Content wrapper - adjust top/bottom padding (py-8) to change card height */}
       <div className="flex flex-col items-center justify-between h-full py-8">
         <Link 
