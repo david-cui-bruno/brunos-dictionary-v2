@@ -17,26 +17,38 @@ export default function AdminButton({ onOpen }: AdminButtonProps) {
   const [loading, setLoading] = useState(true)
 
   const checkAdminStatus = useCallback(async () => {
+    console.log('Checking admin status...', { session: session?.user?.id }) // Debug log
+    
     if (!session?.user?.id) {
+      console.log('No session or user ID') // Debug log
       setIsAdmin(false)
       setLoading(false)
       return
     }
 
     try {
+      console.log('Fetching admin verify...') // Debug log
       const response = await fetch('/api/admin/verify')
+      console.log('Admin verify response:', response.status) // Debug log
+      
       if (response.ok) {
+        console.log('Admin verification successful') // Debug log
         setIsAdmin(true)
         // Fetch pending count
         const pendingResponse = await fetch('/api/admin/queue/count')
+        console.log('Pending count response:', pendingResponse.status) // Debug log
+        
         if (pendingResponse.ok) {
           const data = await pendingResponse.json()
+          console.log('Pending count data:', data) // Debug log
           setPendingCount(data.count || 0)
         }
       } else {
+        console.log('Admin verification failed') // Debug log
         setIsAdmin(false)
       }
     } catch (error) {
+      console.error('Admin check error:', error) // Debug log
       setIsAdmin(false)
     } finally {
       setLoading(false)
@@ -49,6 +61,7 @@ export default function AdminButton({ onOpen }: AdminButtonProps) {
 
   // Don't render if not admin or still loading
   if (loading || !isAdmin) {
+    console.log('Not rendering admin button:', { loading, isAdmin }) // Debug log
     return null
   }
 
