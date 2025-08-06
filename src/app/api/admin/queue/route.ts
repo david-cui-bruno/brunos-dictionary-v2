@@ -4,9 +4,13 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('Admin queue: Starting request')
+    
     await requireAdmin()
+    console.log('Admin queue: Admin verification passed')
 
-    // Single query with joins - no more N+1!
+    // Fix: Get moderation queue items and their related definitions
+    console.log('Admin queue: Fetching queue items')
     const { data: queueItems, error } = await supabaseAdmin
       .from('moderation_queue')
       .select(`
@@ -29,28 +33,47 @@ export async function GET(request: NextRequest) {
           users!definitions_author_id_fkey (
             username
           )
-        ),
-        flags:flags (
-          reason,
-          created_at,
-          users!flags_flagger_id_fkey (
-            username
-          )
         )
       `)
       .eq('status', 'pending')
       .order('flagged_at', { ascending: false })
 
+    console.log('Admin queue: Query result:', { data: queueItems?.length, error })
+
     if (error) {
+      console.error('Admin queue: Supabase error:', error)
       throw error
     }
 
-    // Transform the data to match expected format
-    const itemsWithFlags = (queueItems || []).map((item) => ({
-          ...item,
-      flags: item.flags || []
-    }))
+    // Get flags separately for each definition
+    const itemsWithFlags = await Promise.all(
+      (queueItems || []).map(async (item) => {
+        if (!item.definition_id) return item
 
+        // Get flags for this definition
+        const { data: flags, error: flagsError } = await supabaseAdmin
+          .from('flags')
+          .select(`
+            reason,
+            created_at,
+            users!flags_flagger_id_fkey (
+              username
+            )
+          `)
+          .eq('definition_id', item.definition_id)
+
+        if (flagsError) {
+          console.error('Error fetching flags for definition:', item.definition_id, flagsError)
+        }
+
+        return {
+          ...item,
+          flags: flags || []
+        }
+      })
+    )
+
+    console.log('Admin queue: Returning items:', itemsWithFlags.length)
     return NextResponse.json({ items: itemsWithFlags })
 
   } catch (error) {
