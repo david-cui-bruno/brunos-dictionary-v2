@@ -135,7 +135,7 @@ export default async function HomePage({ searchParams }: Props) {
             </div>
             {recentWords.data && recentWords.data.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recentWords.data.slice(0, 9).map((word, index) => {
+                {recentWords.data.slice(0, 6).map((word, index) => {  // Changed from 9 to 6
                   const row = Math.floor(index / 3)
                   const definition = word.definitions?.[0]
                   
