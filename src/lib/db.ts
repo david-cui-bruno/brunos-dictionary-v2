@@ -18,7 +18,7 @@ export async function getWords(search?: string, options?: FetchOptions) {
       )
     `)
     .eq('definitions.status', 'clean')
-    .order('word', { ascending: true })
+    .order('created_at', { ascending: false }) // Changed from 'word' to 'created_at' and made descending
 
   if (search) {
     query = query.ilike('word', `%${search}%`)

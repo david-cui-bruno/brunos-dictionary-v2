@@ -252,12 +252,12 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex flex-row sm:flex-col gap-4 sm:gap-2 mt-2 sm:mt-0">
                   <div className="flex items-center gap-2">
-                    <div className="text-xl sm:text-2xl font-bold text-[#4E3629] w-8 text-right">{myWords.length}</div>
+                    <div className="text-xl sm:text-2xl font-bold text-[#4E3629] min-w-[2rem] text-right">{myWords.length}</div>
                     <div className="text-sm text-[#4E3629]">words</div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Link href="/leaderboard">
-                      <div className={`text-xl sm:text-2xl font-bold w-8 text-right hover:opacity-80 transition-opacity cursor-pointer ${
+                      <div className={`text-xl sm:text-2xl font-bold min-w-[2rem] text-right hover:opacity-80 transition-opacity cursor-pointer ${
                         karma > 0 ? 'text-[#4C6B46]' : 
                         karma < 0 ? 'text-[#B04A39]' : 
                         'text-[#4E3629]'
