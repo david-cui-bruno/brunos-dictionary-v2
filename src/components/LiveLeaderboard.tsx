@@ -89,14 +89,11 @@ export default function LiveLeaderboard() {
   if (words.length === 0) {
     return (
       <div className="bruno-card h-full">
-        <div className="flex flex-col items-center justify-between h-full py-8">
+        <div className="flex flex-col items-center justify-center h-full">
           <div className="text-center">
             <div className="text-6xl mb-4">📝</div>
             <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">No words yet</h3>
             <p className="text-[#8E8B82]">Be the first to add words!</p>
-          </div>
-          <div className="w-full px-6">
-            {/* Empty space to match WordOfDay layout */}
           </div>
         </div>
       </div>
@@ -105,11 +102,7 @@ export default function LiveLeaderboard() {
 
   return (
     <div className="bruno-card h-full">
-      <div className="flex flex-col items-center justify-between h-full py-4">
-        <div className="text-center">
-          {/* Empty space to match WordOfDay title height */}
-        </div>
-        
+      <div className="flex flex-col items-center justify-center h-full">
         <div className="w-full px-6">
           <AnimatePresence mode="popLayout">
             <div className="space-y-4">

@@ -107,11 +107,10 @@ export default async function HomePage({ searchParams }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Word of the Day */}
             <section>
-              {/* Reduced margin from mb-4 to mb-2 */}
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-1">Word of the Day</h2>
               </div>
-              <div className="min-h-[300px]">
+              <div className="h-[300px]"> {/* Changed from h-full to h-[300px] */}
                 <WordOfDay initialWord={wordOfDay.data} />
               </div>
             </section>
@@ -121,7 +120,7 @@ export default async function HomePage({ searchParams }: Props) {
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-playfair font-bold text-[#4E3629] mb-1">Top Words</h2>
               </div>
-              <div className="min-h-[300px]">
+              <div className="h-[300px]"> {/* Changed from h-full to h-[300px] */}
                 <LiveLeaderboard />
               </div>
             </section>

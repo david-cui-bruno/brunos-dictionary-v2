@@ -101,26 +101,21 @@ export default function WordOfDay({ initialWord }: WordOfDayProps) {
 
   return (
     <div className="bruno-card h-full">
-      {/* Content wrapper - adjust top/bottom padding (py-8) to change card height */}
-      <div className="flex flex-col items-center justify-between h-full py-8">
+      <div className="flex flex-col items-center justify-center h-full"> {/* Removed py-2 */}
         <Link 
           href={`/search?q=${encodeURIComponent(word.words.word)}`}
           className="hover:text-[#4E3629]/80 transition-colors"
         >
-          {/* Word title - dynamic font size based on length */}
-          <h3 className={`${getWordFontSize(word.words.word)} font-playfair font-bold text-[#4E3629] text-center mb-6 leading-tight`}>
+          <h3 className={`${getWordFontSize(word.words.word)} font-playfair font-bold text-[#4E3629] text-center mb-4 leading-tight`}>
             {word.words.word}
           </h3>
         </Link>
         
-        {/* Definition container - adjust left/right padding (px-6) */}
         <div className="w-full px-6">
-          {/* Definition text - dynamic font size based on word count */}
-          <p className={`text-[#4E3629] ${getDefinitionFontSize(word.words.definitions[0]?.body ?? "")} mb-4 leading-relaxed text-center line-clamp-3`}>
+          <p className={`text-[#4E3629] ${getDefinitionFontSize(word.words.definitions[0]?.body ?? "")} mb-3 leading-relaxed text-center line-clamp-3`}>
             {truncateText(word.words.definitions[0]?.body ?? "No definition available", 200)}
           </p>
           {word.words.definitions[0]?.example && (
-            // Example text - also make dynamic based on word count
             <p className={`text-[#8E8B82] italic text-center ${getDefinitionFontSize(word.words.definitions[0].example)} line-clamp-2`}>
               "{truncateText(word.words.definitions[0].example, 150)}"
             </p>
