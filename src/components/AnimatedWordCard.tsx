@@ -15,7 +15,16 @@ interface AnimatedWordCardProps {
   row: number
 }
 
-export default function AnimatedWordCard({ word, definition, example, slug, definitionId, score, index, row }: AnimatedWordCardProps) {
+export default function AnimatedWordCard({ 
+  word, 
+  definition, 
+  example, 
+  slug, 
+  definitionId, 
+  score, 
+  index, 
+  row
+}: AnimatedWordCardProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, {
     once: true,

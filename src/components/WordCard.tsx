@@ -29,7 +29,7 @@ const WordCard = ({
   userVote = 0,
   tags = [],
   showVoting = true,
-  showSharing = false
+  showSharing = false,
 }: WordCardProps) => {
   const handleShare = async () => {
     if (navigator.share) {

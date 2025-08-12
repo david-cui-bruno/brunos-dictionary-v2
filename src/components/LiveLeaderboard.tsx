@@ -57,13 +57,13 @@ export default function LiveLeaderboard() {
   // Enhanced real-time vote update handling
   useEffect(() => {
     const handleVoteUpdate = (event: CustomEvent) => {
-      const { definitionId, newScore, wordId } = event.detail
-      console.log('🎯 Vote update received:', { definitionId, newScore, wordId })
+      const { definitionId, newScore } = event.detail
+      console.log('🎯 Vote update received:', { definitionId, newScore })
       
       setWords(prevWords => {
         const updatedWords = prevWords.map(word => {
-          // Check if this word has the updated definition
-          if (word.definitions?.some(def => def.id === definitionId) || word.id === wordId) {
+          // Use the existing database relationship: check if this word has the updated definition
+          if (word.definitions?.some(def => def.id === definitionId)) {
             console.log('🔄 Updating word in leaderboard:', word.word, 'new score:', newScore)
             return {
               ...word,
@@ -75,7 +75,7 @@ export default function LiveLeaderboard() {
         })
         
         // Sort by score and take top 3
-        const sortedWords = updatedWords.sort((a, b) => (b.score - a.score))
+        const sortedWords = updatedWords.sort((a, b) => b.score - a.score)
         const topWords = sortedWords.slice(0, 3)
         
         console.log('📊 Leaderboard updated, new top words:', topWords.map(w => `${w.word}: ${w.score}`))
@@ -92,12 +92,8 @@ export default function LiveLeaderboard() {
     // Listen for vote updates
     window.addEventListener('voteUpdate', handleVoteUpdate as EventListener)
     
-    // Listen for custom vote events
-    window.addEventListener('voteChanged', handleVoteUpdate as EventListener)
-    
     return () => {
       window.removeEventListener('voteUpdate', handleVoteUpdate as EventListener)
-      window.removeEventListener('voteChanged', handleVoteUpdate as EventListener)
     }
   }, [fetchLeaderboard])
 

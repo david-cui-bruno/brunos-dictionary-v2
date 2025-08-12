@@ -72,7 +72,7 @@ export default function VoteButtons({
         setScore(newScore)
         setUserVote(data.vote)
         
-        // Emit custom event for real-time updates
+        // Keep it simple - just send definitionId and newScore
         window.dispatchEvent(new CustomEvent('voteUpdate', {
           detail: {
             definitionId,
@@ -80,7 +80,11 @@ export default function VoteButtons({
             action
           }
         }))
-        console.log('VoteButtons dispatched voteUpdate event:', { definitionId, newScore, action })
+        console.log('VoteButtons dispatched voteUpdate event:', { 
+          definitionId, 
+          newScore, 
+          action 
+        })
       } else {
         console.error('Vote failed:', data.error)
       }
