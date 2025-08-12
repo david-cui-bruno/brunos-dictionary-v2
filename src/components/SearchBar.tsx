@@ -1,4 +1,4 @@
-g'use client'
+'use client'
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -123,12 +123,12 @@ export default function SearchBar({ mobile = false }: SearchBarProps) {
           try {
             window.location.href = newUrl
             console.log(`✅ [${actionId}] Navigation initiated successfully`)
-          } catch (navError) {
+          } catch (navError: unknown) {
             console.error(`❌ [${actionId}] Navigation error:`, navError)
             console.error(`❌ [${actionId}] Navigation error details:`, {
               error: navError,
-              message: navError.message,
-              stack: navError.stack
+              message: navError instanceof Error ? navError.message : 'Unknown error',
+              stack: navError instanceof Error ? navError.stack : 'No stack trace'
             })
             
             // Fallback to router
@@ -160,15 +160,15 @@ export default function SearchBar({ mobile = false }: SearchBarProps) {
         
         toast.error(`API error: ${response.status}`)
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const totalTime = Date.now() - startTime
       console.error(`💥 [${actionId}] Random word fetch error after ${totalTime}ms:`, error)
       console.error(`💥 [${actionId}] Error details:`, {
         error: error,
-        message: error.message,
-        stack: error.stack,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
         type: typeof error,
-        constructor: error?.constructor?.name
+        constructor: error instanceof Error ? error.constructor.name : 'Unknown'
       })
       toast.error('Failed to get random word')
     } finally {
