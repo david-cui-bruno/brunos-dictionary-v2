@@ -20,9 +20,11 @@ interface LeaderboardWord {
 
 export default function LiveLeaderboard() {
   const [words, setWords] = useState<LeaderboardWord[]>([])
+  const [lastUpdate, setLastUpdate] = useState<number>(Date.now())
 
   const fetchLeaderboard = useCallback(async () => {
     try {
+      console.log('🔄 Fetching leaderboard data...')
       const response = await fetch('/api/leaderboard', {
         cache: 'no-store' as RequestCache,
         headers: {
@@ -33,10 +35,14 @@ export default function LiveLeaderboard() {
       const data = await response.json()
       
       if (response.ok) {
+        console.log('✅ Leaderboard data received:', data.words?.length || 0, 'words')
         setWords(data.words || [])
+        setLastUpdate(Date.now())
+      } else {
+        console.error('❌ Leaderboard fetch failed:', data)
       }
     } catch (error) {
-      console.error('Error fetching leaderboard:', error)
+      console.error('❌ Error fetching leaderboard:', error)
     }
   }, [])
 
@@ -48,14 +54,17 @@ export default function LiveLeaderboard() {
     return () => clearInterval(interval)
   }, [fetchLeaderboard])
 
-  // Handle real-time vote updates
+  // Enhanced real-time vote update handling
   useEffect(() => {
     const handleVoteUpdate = (event: CustomEvent) => {
-      const { definitionId, newScore } = event.detail
+      const { definitionId, newScore, wordId } = event.detail
+      console.log('🎯 Vote update received:', { definitionId, newScore, wordId })
       
       setWords(prevWords => {
         const updatedWords = prevWords.map(word => {
-          if (word.definitions?.some(def => def.id === definitionId)) {
+          // Check if this word has the updated definition
+          if (word.definitions?.some(def => def.id === definitionId) || word.id === wordId) {
+            console.log('🔄 Updating word in leaderboard:', word.word, 'new score:', newScore)
             return {
               ...word,
               score: newScore,
@@ -63,15 +72,34 @@ export default function LiveLeaderboard() {
             }
           }
           return word
-        }).sort((a, b) => b.score - a.score)
+        })
         
-        return updatedWords.slice(0, 3)
+        // Sort by score and take top 3
+        const sortedWords = updatedWords.sort((a, b) => (b.score - a.score))
+        const topWords = sortedWords.slice(0, 3)
+        
+        console.log('📊 Leaderboard updated, new top words:', topWords.map(w => `${w.word}: ${w.score}`))
+        return topWords
       })
+      
+      // Force a refresh after vote update to ensure accuracy
+      setTimeout(() => {
+        console.log('🔄 Forcing leaderboard refresh after vote update...')
+        fetchLeaderboard()
+      }, 500)
     }
 
+    // Listen for vote updates
     window.addEventListener('voteUpdate', handleVoteUpdate as EventListener)
-    return () => window.removeEventListener('voteUpdate', handleVoteUpdate as EventListener)
-  }, [])
+    
+    // Listen for custom vote events
+    window.addEventListener('voteChanged', handleVoteUpdate as EventListener)
+    
+    return () => {
+      window.removeEventListener('voteUpdate', handleVoteUpdate as EventListener)
+      window.removeEventListener('voteChanged', handleVoteUpdate as EventListener)
+    }
+  }, [fetchLeaderboard])
 
   const getRankIcon = (index: number) => {
     switch (index) {
