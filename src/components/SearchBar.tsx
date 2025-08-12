@@ -33,16 +33,38 @@ export default function SearchBar({ mobile = false }: SearchBarProps) {
   const handleRandomWord = async () => {
     setIsRandomizing(true)
     try {
-      const response = await fetch('/api/random-word')
+      console.log('Fetching random word from:', window.location.origin + '/api/random-word')
+      
+      const response = await fetch('/api/random-word', {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+      
+      console.log('Response status:', response.status)
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
+      
       if (response.ok) {
-        const { word } = await response.json()
-        // Use window.location for a full page refresh to ensure the search page updates
-        window.location.href = `/search?q=${encodeURIComponent(word.word)}`
+        const data = await response.json()
+        console.log('Random word data:', data)
+        
+        if (data.word && data.word.word) {
+          const newUrl = `/search?q=${encodeURIComponent(data.word.word)}`
+          console.log('Navigating to:', newUrl)
+          window.location.href = newUrl
+        } else {
+          console.error('Invalid word data structure:', data)
+          toast.error('Invalid response from server')
+        }
       } else {
-        toast.error('Failed to get random word')
+        const errorText = await response.text()
+        console.error('API error response:', errorText)
+        toast.error(`API error: ${response.status}`)
       }
     } catch (error) {
-      console.error('Error getting random word:', error)
+      console.error('Random word fetch error:', error)
       toast.error('Failed to get random word')
     } finally {
       setIsRandomizing(false)
