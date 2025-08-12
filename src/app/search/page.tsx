@@ -29,11 +29,17 @@ function SearchPageContent() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
   const [results, setResults] = useState<SearchResult[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true) // Start with loading true
+  const [hasSearched, setHasSearched] = useState(false) // Track if we've performed a search
 
   useEffect(() => {
     if (query.trim()) {
+      setLoading(true)
+      setHasSearched(true)
       searchWords()
+    } else {
+      setLoading(false)
+      setHasSearched(false)
     }
   }, [query])
 
@@ -48,9 +54,11 @@ function SearchPageContent() {
       } else {
         const errorData = await response.json()
         console.error('Search error data:', errorData)
+        setResults([])
       }
     } catch (error) {
       console.error('Search error:', error)
+      setResults([])
     } finally {
       setLoading(false)
     }
@@ -69,12 +77,14 @@ function SearchPageContent() {
                 <h1 className="text-4xl font-playfair font-bold text-[#4E3629]">
                   Results for "{query}"
                 </h1>
-                <p className="text-[#8E8B82]">
-                  {results.length > 0 
-                    ? `Found ${results.length} result${results.length === 1 ? '' : 's'}`
-                    : 'No results found'
-                  }
-                </p>
+                {!loading && (
+                  <p className="text-[#8E8B82]">
+                    {results.length > 0 
+                      ? `Found ${results.length} result${results.length === 1 ? '' : 's'}`
+                      : 'No results found'
+                    }
+                  </p>
+                )}
               </>
             ) : (
               <>
@@ -96,27 +106,19 @@ function SearchPageContent() {
                   </div>
                 ))}
               </div>
-            ) : results.length === 0 ? (
+            ) : hasSearched && results.length === 0 ? (
               <div className="bruno-card text-center py-12">
-                <div className="text-6xl mb-4">📚</div>
-                <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">
-                  {query ? 'No words found matching your search' : 'No words available yet'}
-                </h3>
-                <p className="text-[#8E8B82] mb-6">
-                  {query 
-                    ? 'Try searching for different terms or browse our recent additions.'
-                    : 'Be the first to add words to the dictionary!'
-                  }
-                </p>
-                {!query && (
-                  <Link href="/add">
-                    <button className="bruno-button">
-                      Add Your First Word
-                    </button>
-                  </Link>
-                )}
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">No results found</h3>
+                <p className="text-[#8E8B82] mb-4">Try searching for a different term</p>
+                <Link 
+                  href="/add" 
+                  className="inline-flex items-center px-4 py-2 bg-[#4E3629] text-white rounded-md hover:bg-[#4E3629]/80 transition-colors"
+                >
+                  Add New Word
+                </Link>
               </div>
-            ) : (
+            ) : hasSearched && results.length > 0 ? (
               <div className="space-y-4">
                 {results.map((result) => (
                   <DefinitionCard 
@@ -126,11 +128,11 @@ function SearchPageContent() {
                   />
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </main>
-
+      
       <Footer />
     </div>
   )
