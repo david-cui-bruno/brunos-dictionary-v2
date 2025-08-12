@@ -108,8 +108,8 @@ const Navigation = () => {
             </h1>
           </a>
 
-          {/* Desktop Search Bar */}
-          <div className="max-w-md w-full mx-8">
+          {/* Desktop Search Bar - Better centering */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-md w-full">
             <SearchBar />
           </div>
 

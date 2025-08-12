@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase' // Use admin client instead
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all words with clean definitions (limit to reasonable number for performance)
-    const { data: words, error } = await supabase
+    console.log('Random word API called')
+    
+    // Get all words with clean definitions using admin client
+    const { data: words, error } = await supabaseAdmin
       .from('words')
       .select(`
         *,
@@ -20,20 +22,37 @@ export async function GET(request: NextRequest) {
         )
       `)
       .eq('definitions.status', 'clean')
-      .limit(1000) // Limit to prevent performance issues
+      .limit(1000)
 
-    if (error || !words || words.length === 0) {
-      console.error('Error getting words:', error)
-      return NextResponse.json({ error: 'Failed to get words' }, { status: 500 })
+    if (error) {
+      console.error('Supabase error:', error)
+      return NextResponse.json({ 
+        error: 'Database error', 
+        details: error.message 
+      }, { status: 500 })
     }
+
+    if (!words || words.length === 0) {
+      console.log('No words found in database')
+      return NextResponse.json({ 
+        error: 'No words available' 
+      }, { status: 404 })
+    }
+
+    console.log(`Found ${words.length} words, selecting random one`)
 
     // Pick a random word from the results
     const randomIndex = Math.floor(Math.random() * words.length)
     const randomWord = words[randomIndex]
 
+    console.log('Selected random word:', randomWord.word)
+
     return NextResponse.json({ word: randomWord })
   } catch (error) {
-    console.error('Error getting random word:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Unexpected error in random word API:', error)
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
