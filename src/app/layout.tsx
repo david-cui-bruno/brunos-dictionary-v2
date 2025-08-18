@@ -19,6 +19,10 @@ export const viewport = {
 export const metadata: Metadata = {
   title: "Bruno's Dictionary",
   description: "Brown University's student-run slang dictionary",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
@@ -28,6 +32,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <body className={inter.className}>
         <Providers>
           {children}
