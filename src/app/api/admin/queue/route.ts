@@ -4,13 +4,9 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Admin queue: Starting request')
-    
     await requireAdmin()
-    console.log('Admin queue: Admin verification passed')
 
     // Fix: Get moderation queue items and their related definitions
-    console.log('Admin queue: Fetching queue items')
     const { data: queueItems, error } = await supabaseAdmin
       .from('moderation_queue')
       .select(`
@@ -37,8 +33,6 @@ export async function GET(request: NextRequest) {
       `)
       .eq('status', 'pending')
       .order('flagged_at', { ascending: false })
-
-    console.log('Admin queue: Query result:', { data: queueItems?.length, error })
 
     if (error) {
       console.error('Admin queue: Supabase error:', error)
@@ -73,7 +67,6 @@ export async function GET(request: NextRequest) {
       })
     )
 
-    console.log('Admin queue: Returning items:', itemsWithFlags.length)
     return NextResponse.json({ items: itemsWithFlags })
 
   } catch (error) {

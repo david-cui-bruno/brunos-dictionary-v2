@@ -8,6 +8,7 @@ import VoteButtons from '@/components/VoteButtons'
 import FlagButton from '@/components/FlagButton'
 import { Share2 } from 'lucide-react'
 import Link from 'next/link'
+import AdSense from '@/components/AdSense'
 
 interface SearchResult {
   id: string
@@ -31,6 +32,7 @@ function SearchPageContent() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(true) // Start with loading true
   const [hasSearched, setHasSearched] = useState(false) // Track if we've performed a search
+  const [popularWords, setPopularWords] = useState<Array<{ id: string; word: string }>>([]) // Add this
 
   useEffect(() => {
     if (query.trim()) {
@@ -42,6 +44,23 @@ function SearchPageContent() {
       setHasSearched(false)
     }
   }, [query])
+
+  // Add this effect to fetch popular words
+  useEffect(() => {
+    const fetchPopularWords = async () => {
+      try {
+        const response = await fetch('/api/leaderboard')
+        if (response.ok) {
+          const data = await response.json()
+          setPopularWords(data.words?.slice(0, 8) || [])
+        }
+      } catch (error) {
+        console.error('Error fetching popular words:', error)
+      }
+    }
+    
+    fetchPopularWords()
+  }, [])
 
   const searchWords = async () => {
     setLoading(true)
@@ -97,7 +116,7 @@ function SearchPageContent() {
           </div>
 
           {/* Results Container */}
-          <div className="max-w-[700px] mx-auto">
+          <div className="max-w-[1200px] mx-auto">
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -111,22 +130,61 @@ function SearchPageContent() {
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-playfair font-bold text-[#4E3629] mb-2">No results found</h3>
                 <p className="text-[#8E8B82] mb-4">Try searching for a different term</p>
-                <Link 
-                  href="/add" 
-                  className="inline-flex items-center px-4 py-2 bg-[#4E3629] text-white rounded-md hover:bg-[#4E3629]/80 transition-colors"
-                >
+                
+                {/* Add related content */}
+                <div className="mt-6">
+                  <h4 className="text-lg font-semibold text-[#4E3629] mb-3">Popular Words</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {popularWords.slice(0, 8).map((word: { id: string; word: string }) => (
+                      <Link 
+                        key={word.id}
+                        href={`/search?q=${encodeURIComponent(word.word)}`}
+                        className="p-2 bg-[#FAF7F3] border border-[#8E8B82] rounded hover:bg-[#8E8B82] hover:text-white transition-colors"
+                      >
+                        {word.word}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                
+                <Link href="/add" className="bruno-button inline-block mt-6">
                   Add New Word
                 </Link>
               </div>
             ) : hasSearched && results.length > 0 ? (
-              <div className="space-y-4">
-                {results.map((result) => (
-                  <DefinitionCard 
-                    key={result.id}
-                    definition={result}
-                    word={result.words.word}
-                  />
-                ))}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Left Side Ad */}
+                <div className="lg:col-span-2">
+                  <div className="sticky top-8">
+                    <AdSense 
+                      adSlot="1122334455" 
+                      className="text-center"
+                      style={{ minHeight: '250px' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="lg:col-span-8 space-y-4">
+                  {results.map((result) => (
+                    <DefinitionCard 
+                      key={result.id}
+                      definition={result}
+                      word={result.words.word}
+                    />
+                  ))}
+                </div>
+
+                {/* Right Side Ad */}
+                <div className="lg:col-span-2">
+                  <div className="sticky top-8">
+                    <AdSense 
+                      adSlot="5566778899" 
+                      className="text-center"
+                      style={{ minHeight: '250px' }}
+                    />
+                  </div>
+                </div>
               </div>
             ) : null}
           </div>

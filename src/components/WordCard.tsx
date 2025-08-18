@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, Share2 } from "lucide-react";
 import Link from "next/link";
 import VoteButtons from "./VoteButtons";
+import { useEffect, useState } from 'react'
 
 interface WordCardProps {
   word: string;

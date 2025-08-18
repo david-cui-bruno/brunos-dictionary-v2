@@ -16,6 +16,7 @@ import { TypeAnimation } from 'react-type-animation';
 import AnimatedTitle from '@/components/AnimatedTitle'
 import { motion } from 'framer-motion'
 import LiveLeaderboard from '@/components/LiveLeaderboard'
+import AdSense from '@/components/AdSense'
 
 type Props = {
   searchParams: { refresh?: string }
@@ -168,6 +169,13 @@ export default async function HomePage({ searchParams }: Props) {
           </section>
         </div>
       </main>
+
+      {/* Ad at the very bottom, before Footer */}
+      <AdSense 
+        adSlot="0987654321" 
+        className="my-8 text-center"
+        style={{ minHeight: '90px' }}
+      />
 
       <Footer />
     </div>

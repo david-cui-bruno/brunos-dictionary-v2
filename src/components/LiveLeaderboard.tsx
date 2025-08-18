@@ -24,7 +24,6 @@ export default function LiveLeaderboard() {
 
   const fetchLeaderboard = useCallback(async () => {
     try {
-      console.log('🔄 Fetching leaderboard data...')
       const response = await fetch('/api/leaderboard', {
         cache: 'no-store' as RequestCache,
         headers: {
@@ -35,7 +34,6 @@ export default function LiveLeaderboard() {
       const data = await response.json()
       
       if (response.ok) {
-        console.log('✅ Leaderboard data received:', data.words?.length || 0, 'words')
         setWords(data.words || [])
         setLastUpdate(Date.now())
       } else {
@@ -58,13 +56,11 @@ export default function LiveLeaderboard() {
   useEffect(() => {
     const handleVoteUpdate = (event: CustomEvent) => {
       const { definitionId, newScore } = event.detail
-      console.log('🎯 Vote update received:', { definitionId, newScore })
       
       setWords(prevWords => {
         const updatedWords = prevWords.map(word => {
           // Use the existing database relationship: check if this word has the updated definition
           if (word.definitions?.some(def => def.id === definitionId)) {
-            console.log('🔄 Updating word in leaderboard:', word.word, 'new score:', newScore)
             return {
               ...word,
               score: newScore,
@@ -78,13 +74,11 @@ export default function LiveLeaderboard() {
         const sortedWords = updatedWords.sort((a, b) => b.score - a.score)
         const topWords = sortedWords.slice(0, 3)
         
-        console.log('📊 Leaderboard updated, new top words:', topWords.map(w => `${w.word}: ${w.score}`))
         return topWords
       })
       
       // Force a refresh after vote update to ensure accuracy
       setTimeout(() => {
-        console.log('🔄 Forcing leaderboard refresh after vote update...')
         fetchLeaderboard()
       }, 500)
     }

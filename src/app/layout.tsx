@@ -3,6 +3,10 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import AdminWrapper from '@/components/AdminWrapper'
+import { validateEnv } from '@/lib/env'
+
+// Validate environment variables on app initialization
+validateEnv()
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -24,14 +28,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        {/* Google AdSense Code */}
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9062937758410331"
-          crossOrigin="anonymous"
-        />
-      </head>
       <body className={inter.className}>
         <Providers>
           {children}
